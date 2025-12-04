@@ -12,7 +12,7 @@ Disponível em:
 
 🔗 Netlify: https://selectsaude-pe.netlify.app/
 
-🔗 GitHub Pages (PWA não funciona): https://allanlauzid.github.io/redecredenciada-selectsaude-pe/
+🔗 GitHub Pages <span style="color:red;">(PWA não funciona)</span>: https://allanlauzid.github.io/redecredenciada-selectsaude-pe/
 
 🔗 PDF original: https://github.com/allanlauzid/redecredenciada-selectsaude-pe/blob/main/docs/rede-credenciada-PE-2025-09-30.pdf
 
