@@ -8,6 +8,9 @@ Consulta interativa da rede credenciada da Select Saúde PE.<br>Convertida do PD
 
 </div>
 
+Disponível em:
+https://allanlauzid.github.io/redecredenciada-selectsaude-pe/ e em https://selectsaude-pe.netlify.app/
+
 ---
 
 # 🏥 Rede Credenciada – Select Saúde Premium (PWA)
