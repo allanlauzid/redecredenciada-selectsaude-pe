@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rede Credenciada - Select Saúde Premium</title>
+
+    <!-- Define a cor da barra do navegador e o tema visual principal do PWA -->
+    <meta name="theme-color" content="#794ef4">
+
+	<!-- Faz a página reconhecer o arquivo manifest.json, necessário para funcionar como PWA -->
+	<link rel="manifest" href="/manifest.json">
+
+    <!-- Define os ícones usados como favicon e como atalho quando o site é instalado -->
+	<link rel="icon" type="image/png" sizes="192x192" href="/img/logo_select_operadora_192px.png">
+	<link rel="apple-touch-icon" href="/img/logo_select_operadora_512px.png">
+
+    <!-- Estilos base do DataTables e do layout responsivo da tabela -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <style>
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+        /* Variáveis e estilos gerais da interface (cores, textos, fundo e contêineres principais) */
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #434343;
+            --container-bg: white;
+            --primary-color: #794ef0;
+            --header-text: white;
+            --filter-bg: #e2d6ff;
+            --row-even: #f0ebff;
+            --row-hover: #e2d6ff;
+            --border-color: #e0e0e0;
+        }
+
+        /* Versão das mesmas variáveis quando o modo escuro está ativo no body */
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --container-bg: #1e1e1e;
+            --primary-color: #5b3bb4;
+            --header-text: #e0e0e0;
+            --filter-bg: #2c2c2c;
+            --row-even: #252525;
+            --row-hover: #333333;
+            --border-color: #333;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 11pt;
+            transition: background-color 0.3s, color 0.3s;
+            overflow: hidden;              /* Impede o scroll geral no desktop; controle fica na área da tabela */
+            box-sizing: border-box;
+            padding: 10px 30px;            /* Margens laterais do conteúdo principal */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Contêiner principal que organiza cabeçalho e tabela em layout flexível vertical */
+        .page {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Área do cabeçalho que permanece visualmente fixa no topo da página */
+        .fixed-top-container {
+            flex-shrink: 0;
+            background-color: var(--bg-color);
+        }
+        
+        .header-content {
+            background: var(--container-bg);
+            padding: 10px; 
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: background-color 0.3s;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; 
+            margin-bottom: 5px; 
+            flex-wrap: wrap; 
+            gap: 10px;
+        }
+
+        h1 {
+            color: #5b3bb4;
+            text-align: center;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+        
+        body.dark-mode h1 {
+            color: #9c7dff;
+        }
+
+		/* Estilo do botão flutuante de modo escuro quando a página está em tela maior (desktop) */
+		.theme-toggle {
+			position: fixed;
+			bottom: 200px;
+			right: 100px;
+			z-index: 2000;
+
+			background: var(--container-bg);
+			border: 2px solid #794ef0;
+			color: #794ef0;
+			padding: 0;
+			border-radius: 50px;
+			cursor: pointer;
+
+			display: flex;
+			align-items: center;
+			width: 50px;
+			height: 50px;
+			overflow: hidden;
+			transition: width 0.3s ease, background-color 0.3s ease;
+			white-space: nowrap;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+		}
+
+		.theme-toggle .icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 50px;
+			height: 50px;
+			flex-shrink: 0;
+			font-size: 1.5rem;
+			margin-top: -3px;
+			margin-left: -1px;
+		}
+
+		.theme-toggle .text {
+			opacity: 0;
+			transition: opacity 0.3s ease;
+			font-size: 0.9em;
+			padding-right: 15px;
+		}
+
+		.fixed-top-container.hidden-header {
+			max-height: 0;
+			opacity: 0;
+			overflow: hidden;
+			transition: max-height 0.3s ease, opacity 0.3s ease;
+		}
+
+		.theme-toggle.hidden-header {
+			opacity: 0;
+			pointer-events: none;
+			transform: translateX(-40px);
+			transition: opacity 0.3s ease, transform 0.3s ease;
+		}
+
+		.theme-toggle:hover .text {
+			opacity: 1;
+		}
+
+		body.dark-mode .theme-toggle {
+			border-color: #ebb432;
+			color: #ebb432;
+		}
+
+        /* Caixa de aviso legal informando que o site é projeto pessoal e não canal oficial */
+        .disclaimer-box {
+            background-color: #fff8e1; 
+            color: #8d6e63; 
+            border: 1px solid #ffe0b2;
+            padding: 5px; 
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9em;
+            margin-bottom: 5px; 
+            transition: all 0.3s ease;
+            opacity: 1;
+            max-height: 100px; 
+            overflow: hidden;
+        }
+        
+        body.dark-mode .disclaimer-box {
+            background-color: #3e2723;
+            color: #ffccbc;
+            border-color: #4e342e;
+        }
+
+        .disclaimer-box a {
+            color: inherit;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+		/* Seção da tabela, que é a única parte rolável no layout desktop */
+		.table-section {
+			flex: 1;
+			min-height: 0;
+			display: flex;
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.table-container {
+			background: var(--container-bg);
+			padding: 20px;
+			box-shadow: 0 0 15px rgba(0,0,0,0.1);
+			border-radius: 8px;
+			margin: 0;
+			transition: background-color 0.3s;
+			flex: 1;
+			min-height: 0;
+			display: flex;
+			flex-direction: column;
+			width: 100%;
+			max-width: 100%;
+		}
+
+        #loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1em;
+            color: var(--text-color);
+            flex-shrink: 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+		.table-wrapper {
+			flex: 1;
+			min-height: 0;
+			width: 100%;
+			max-width: 100%;
+			overflow-y: auto;
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+			position: relative;
+		}
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .table-wrapper::-webkit-scrollbar-track {
+            background: #ece7ff;
+            border-radius: 4px;
+        }
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #b39ddb;
+            border-radius: 4px;
+        }
+        .table-wrapper:hover::-webkit-scrollbar-thumb {
+            background: #8e6ce0;
+        }
+
+        body.dark-mode .table-wrapper::-webkit-scrollbar-track {
+            background: #2c2c2c;
+        }
+        body.dark-mode .table-wrapper::-webkit-scrollbar-thumb {
+            background: #5b3bb4;
+        }
+
+        .table-wrapper {
+            scrollbar-width: thin;
+            scrollbar-color: #b39ddb #ece7ff;
+        }
+        body.dark-mode .table-wrapper {
+            scrollbar-color: #5b3bb4 #2c2c2c;
+        }
+
+		table.dataTable {
+			border-collapse: collapse;
+			border: 1px solid #5b3bb4;
+			width: max-content !important;
+			min-width: 100%;
+		}
+
+        table.dataTable thead tr:first-child th {
+            background-color: var(--primary-color);
+            color: var(--header-text);
+            border: 1px solid #5b3bb4;
+            font-weight: 700;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        table.dataTable thead tr:nth-child(2) th {
+            padding: 6px;
+            background-color: var(--filter-bg);
+            border: 1px solid #ccc;
+        }
+
+        body.dark-mode table.dataTable thead tr:nth-child(2) th {
+            border-color: #444;
+        }
+
+        table.dataTable thead select {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            background-color: var(--container-bg);
+            font-size: 0.9em;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        table.dataTable tbody td {
+            border: 1px solid var(--border-color);
+            padding: 8px 10px;
+            vertical-align: middle;
+            font-size: 0.95em;
+            color: var(--text-color);
+        }
+
+        table.dataTable tbody tr:nth-child(even) { background-color: var(--row-even); }
+        table.dataTable tbody tr:nth-child(odd) { background-color: var(--container-bg); }
+        table.dataTable tbody tr:hover { background-color: var(--row-hover) !important; }
+
+        /* Ajuste responsivo do tamanho da logo da Select Saúde */
+        .logo-img {
+            max-height: 60px; 
+            width: auto;
+            transition: max-height 0.3s ease; 
+        }
+
+        @media (min-width: 768px) {
+            .logo-img {
+                max-height: 150px; 
+            }
+        }
+
+		/* Estilos do campo de pesquisa global transformado em botão flutuante no desktop */
+		#tabelaCredenciados_filter {
+			position: fixed;
+			bottom: 140px;
+			right: 100px;
+			z-index: 2500;
+
+			width: 50px;
+			height: 50px;
+			padding: 0 10px;
+
+			display: flex !important;
+			align-items: center;
+			justify-content: center;
+
+			background-color: var(--container-bg);
+			border: 2px solid #794ef0;
+			border-radius: 999px;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+			box-sizing: border-box;
+			overflow: hidden;
+			cursor: text;
+
+			transition: width 0.25s ease, box-shadow 0.25s ease;
+		}
+
+        #tabelaCredenciados_filter label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+            width: 100%;
+            font-size: 0;   /* Esconde o texto padrão “Pesquisar:” do DataTables */
+        }
+
+        #tabelaCredenciados_filter label::before {
+            content: "";
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            margin-right: 2px;
+
+            background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+<circle cx='11' cy='11' r='7' stroke='%23794ef0' stroke-width='2' fill='none'/>\
+<line x1='16' y1='16' x2='21' y2='21' stroke='%23794ef0' stroke-width='2' stroke-linecap='round'/>\
+</svg>");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+        }
+
+        #tabelaCredenciados_filter label > span {
+            display: none !important;
+        }
+
+        #tabelaCredenciados_filter input {
+            border: 0;
+            outline: none;
+            background: transparent;
+
+            width: 0;
+            opacity: 0;
+            padding: 0;
+
+            font-size: 14px;
+            color: var(--text-color);
+
+            transition: width 0.25s ease, opacity 0.25s ease, padding 0.25s ease;
+        }
+
+        #tabelaCredenciados_filter.expanded {
+            width: min(260px, 80vw);
+            justify-content: flex-start;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+        }
+
+        #tabelaCredenciados_filter.expanded input {
+            width: 100%;
+            opacity: 1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #794ef0;
+            background-color: var(--container-bg);
+        }
+
+        #tabelaCredenciados_filter.expanded input:focus {
+            border-color: #5b3bb4;
+            box-shadow: 0 0 4px rgba(121,78,240,0.5);
+        }
+
+        body.dark-mode #tabelaCredenciados_filter {
+            border-color: #9c7dff;
+            background-color: var(--container-bg);
+        }
+
+        body.dark-mode #tabelaCredenciados_filter label::before {
+            background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+<circle cx='11' cy='11' r='7' stroke='%239c7dff' stroke-width='2' fill='none'/>\
+<line x1='16' y1='16' x2='21' y2='21' stroke='%239c7dff' stroke-width='2' stroke-linecap='round'/>\
+</svg>");
+        }
+
+        body.dark-mode #tabelaCredenciados_filter.expanded input {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            border-color: #9c7dff;
+        }
+
+		/* Ajustes gerais de layout para telas pequenas (celular ou janelas muito baixas) */
+		@media (max-width: 768px), (max-height: 500px) {
+
+			html,
+			body {
+				height: auto;
+				min-height: 100dvh;
+				overflow-x: hidden;
+				overflow-y: auto;
+			}
+
+			body {
+				padding: 8px;
+				display: block;
+			}
+
+			.page {
+				display: block;
+				height: auto;
+				min-height: auto;
+			}
+
+			.table-section,
+			.table-container {
+				width: 100%;
+				max-width: 100%;
+				margin-bottom: 0;
+				display: block;
+				flex: none;
+				min-height: auto;
+			}
+
+			.table-wrapper {
+				width: 100%;
+				max-width: 100%;
+				flex: none;
+				min-height: auto;
+				max-height: none;
+				overflow-x: auto;
+				overflow-y: visible;
+				position: relative;
+			}
+
+			.top-header {
+				flex-wrap: wrap;
+				justify-content: center;
+				align-items: center;
+				row-gap: 2px;
+				column-gap: 5px;
+				text-align: center;
+			}
+
+			.top-header img:not(.logo-img) {
+				transform: scale(0.8);
+				transform-origin: center center;
+			}
+
+			.top-header .logo-img {
+				max-height: 70px;
+			}
+
+			.top-header h1 {
+				order: 3;
+				width: 100%;
+				font-size: 110%;
+				margin-top: 4px;
+				margin-bottom: 0;
+				line-height: 1.2em;
+			}
+
+			#lastUpdatedDate {
+				font-size: 0.8em;
+				display: block;
+				margin-top: 2px;
+			}
+
+			.disclaimer-box {
+				font-size: 0.75em;
+				padding: 4px;
+				margin-bottom: 4px;
+			}
+
+			.top-header > div:first-child {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				text-align: center;
+				width: 100%;
+			}
+
+			.theme-toggle .text {
+				display: none;
+			}
+		}
+
+		/* Ajuste específico para mobile em modo retrato: posiciona botões no canto inferior direito */
+		@media (max-width: 768px) and (orientation: portrait) {
+
+			/* Reposiciona o botão de modo escuro em telas pequenas (retrato) */
+			.theme-toggle {
+				position: fixed;
+				bottom: 120px;
+				right: 50px;
+				top: auto;
+				left: auto;
+			}
+
+			/* Reposiciona o botão/campo flutuante de pesquisa na versão mobile em retrato */
+			#tabelaCredenciados_filter {
+				position: fixed;
+				bottom: 50px;
+				right: 50px;
+				top: auto;
+				left: auto;
+			}
+		}
+
+		/* Ajuste específico para mobile em modo paisagem: mantém botões acessíveis na tela */
+		@media (max-height: 500px) and (orientation: landscape) {
+
+			/* Reposiciona o botão de modo escuro para telas baixas em modo paisagem */
+			.theme-toggle {
+				position: fixed;
+				bottom: 120px;
+				right: 100px;
+				top: auto;
+				left: auto;
+			}
+
+			/* Reposiciona o campo/botão de pesquisa para telas baixas em modo paisagem */
+			#tabelaCredenciados_filter {
+				position: fixed;
+				bottom: 50px;
+				right: 100px;
+				top: auto;
+				left: auto;
+			}
+		}
+
+	</style>
+</head>
+<body>
+
+    <!-- Botão flutuante que permite alternar entre modo claro e modo escuro -->
+    <button class="theme-toggle" id="themeToggle" title="Alternar tema">
+        <span class="icon">🌙</span>
+        <span class="text">Modo Escuro</span>
+    </button>
+
+    <div class="page">
+        <!-- Cabeçalho com aviso legal, título, autor e logo, fixo no topo da interface -->
+        <div class="fixed-top-container">
+            <div class="header-content"> 
+                <div class="disclaimer-box" id="disclaimerBox">
+                    ⚠️ <strong>AVISO LEGAL:</strong> Este site <strong>NÃO É UM CANAL OFICIAL</strong> da <a href="https://selectoperadora.com.br/" target="_blank">Select Saúde</a>. 
+                    <br>
+                    Trata-se de um projeto pessoal de programação (amador) para fins de estudo. 
+                    As informações podem conter erros. Confirme sempre com a operadora.
+                </div>
+                
+                <div class="top-header">
+                    <!-- Lado esquerdo do cabeçalho: badge de Vibe Coding e autoria -->
+                    <div style="text-align: left;">
+                        <a href="https://github.com/allanlauzid" target="_blank" style="text-decoration: none;">
+                            <img height="30" src="https://img.shields.io/badge/Built%20with-Vibe%20Coding-794ef0?style=for-the-badge&logo=google&logoColor=white" alt="Built with Vibe Coding">
+                        </a>
+                        <div style="font-size: 0.85em; margin-top: 4px; font-weight: 500;">
+                            by <a href="https://github.com/allanlauzid" target="_blank" style="text-decoration: none; color: #5b3bb4;">Allan Lauzid</a>
+                        </div>
+                    </div>
+                    
+                    <h1 style="margin-bottom: 5px; margin-top: 5px;">
+                        Rede Credenciada - Select Saúde Premium
+                        <br> 
+                        <span id="lastUpdatedDate" style="color: #e74c3c; font-size: 0.6em; font-weight: normal;">
+                            Atualizada em 30/09/2025
+                        </span>
+                    </h1>
+
+                    <!-- Lado direito do cabeçalho: logo da Select Saúde com link para o site oficial -->
+                    <div>
+                        <a href="https://selectoperadora.com.br/" target="_blank">
+                            <img height="100" src="img/logo_SelectSaude.png" alt="Logo Select Saúde" class="logo-img">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área da tabela interativa, única parte da tela que pode rolar no layout desktop -->
+        <div class="table-section">
+            <div class="table-container">
+                <div id="loading">
+                    <span class="spinner"></span>Carregando dados da rede...
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="tabelaCredenciados" class="display nowrap" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th data-priority="1">Tipo</th>
+                                <th data-priority="1">Prestador</th>
+                                <th data-priority="2">Cidade</th>
+                                <th data-priority="3">Produto</th>
+                                <th>PS Adulto</th>
+                                <th>PS Pediatrico</th>
+                                <th>Consultas</th>
+                                <th>Internação</th>
+                                <th>Maternidade</th>
+                                <th>Básica</th>
+                                <th>Premium</th>
+                                <th>Smart</th>
+                                <th>Obs</th>
+                            </tr>
+                            <!-- Segunda linha do cabeçalho, reservada para filtros individuais por coluna -->
+                            <tr>
+                                <th></th><th></th><th></th><th></th><th></th><th></th>
+                                <th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Linhas da tabela serão preenchidas dinamicamente com os dados do CSV -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bibliotecas JavaScript externas necessárias: jQuery, DataTables e PapaParse -->
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+		/* Lógica do botão de tema: alterna claro/escuro e salva a preferência no localStorage */
+		const themeToggle = document.getElementById('themeToggle');
+		const body = document.body;
+		const iconSpan = themeToggle.querySelector('.icon');
+		const textSpan = themeToggle.querySelector('.text');
+
+		if (localStorage.getItem('theme') === 'dark') {
+			body.classList.add('dark-mode');
+			iconSpan.innerText = '☀️';
+			textSpan.innerText = 'Modo Claro';
+		} else {
+			iconSpan.innerText = '🌙';
+			textSpan.innerText = 'Modo Escuro';
+		}
+
+		themeToggle.addEventListener('click', () => {
+			body.classList.toggle('dark-mode');
+
+			if (body.classList.contains('dark-mode')) {
+				localStorage.setItem('theme', 'dark');
+				iconSpan.innerText = '☀️';
+				textSpan.innerText = 'Modo Claro';
+			} else {
+				localStorage.setItem('theme', 'light');
+				iconSpan.innerText = '🌙';
+				textSpan.innerText = 'Modo Escuro';
+			}
+		});
+
+        /* (Opcional) Código para consultar no GitHub a data da última alteração do arquivo CSV e exibir na tela */
+        /* const user = 'allanlauzid';
+        const repo = 'rede-credenciada-select';
+        const path = 'data/rede_credenciada.csv';
+        
+        fetch(`https://api.github.com/repos/${user}/${repo}/commits?path=${path}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const date = new Date(data[0].commit.author.date);
+                    const formattedDate = date.toLocaleDateString('pt-BR');
+                    document.getElementById('lastUpdatedDate').innerText = `Atualizada em ${formattedDate}`;
+                }
+            })
+            .catch(err => console.log('Não foi possível buscar a data de atualização automática.')); */
+
+        /* Ajusta o campo de busca padrão do DataTables para funcionar como um botão flutuante no layout */
+        function setupFloatingFilter() {
+            const filter = document.getElementById('tabelaCredenciados_filter');
+            if (!filter) return;
+
+            const input = filter.querySelector('input');
+
+            // Expande o botão e mostra o campo de texto ao clicar na área de filtro
+            filter.addEventListener('click', function (e) {
+                e.stopPropagation();
+                filter.classList.add('expanded');
+                if (input) {
+                    input.focus();
+                }
+            });
+
+            // Recolhe o campo de busca quando o usuário clica fora do filtro
+            document.addEventListener('click', function (e) {
+                if (!filter.contains(e.target)) {
+                    filter.classList.remove('expanded');
+                }
+            });
+
+            // Permite fechar o campo pressionando a tecla Esc
+            if (input) {
+                input.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        filter.classList.remove('expanded');
+                        input.blur();
+                    }
+                });
+            }
+        }
+
+		function initTable(data) {
+			$('#tabelaCredenciados').DataTable({
+				data: data,
+				columns: [
+					{ data: "Tipo" },
+					{ data: "Prestador" },
+					{ data: "Cidade" },
+					{ data: "Produto" },
+					{ data: "PS Adulto" },
+					{ data: "PS Pediatrico" },
+					{ data: "Consultas" },
+					{ data: "Internação" },
+					{ data: "Maternidade" },
+					{ data: "Básica 100/200" },
+					{ data: "Premium" },
+					{ data: "Smart" },
+					{ data: "Obs" }
+				],
+				language: {
+					url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+				},
+				paging: false,
+				info: false,
+				orderCellsTop: true,
+				order: [[1, "asc"]],
+				fixedHeader: false,
+				responsive: false,
+				autoWidth: false,
+
+				initComplete: function () {
+					var api = this.api();
+
+					$('#loading').hide();
+					$('#tabelaCredenciados').fadeIn();
+
+					// Cria filtros do tipo <select> na segunda linha do cabeçalho para cada coluna
+					api.columns().every(function () {
+						var column = this;
+						var filterCell = $('thead tr:eq(1) th').eq(column.index());
+
+						var select = $('<select><option value="">Todos</option></select>')
+							.appendTo(filterCell.empty())
+							.on('change', function () {
+								var val = $.fn.dataTable.util.escapeRegex($(this).val());
+								column.search(val ? '^' + val + '$' : '', true, false).draw();
+							});
+					});
+
+					updateFilters(api);
+
+                    // Ao finalizar a criação da tabela, aplica o comportamento de botão flutuante ao filtro global
+                    setupFloatingFilter();
+				},
+
+				drawCallback: function () {
+					var api = this.api();
+					updateFilters(api);
+				}
+			});
+		}
+
+
+        Papa.parse("data/rede_credenciada.csv", {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                setTimeout(() => {
+                    initTable(results.data);
+                }, 500);
+            }
+        });
+
+        function updateFilters(api) {
+            api.columns().every(function () {
+                var column = this;
+                var select = $('thead tr:eq(1) th').eq(column.index()).find('select');
+                var currentVal = select.val();
+
+                var uniqueData = [];
+                api.rows({ search: 'applied' }).every(function (rowIdx) {
+                    var data = api.cell(rowIdx, column.index()).data();
+                    if (uniqueData.indexOf(data) === -1) {
+                        uniqueData.push(data);
+                    }
+                });
+                
+                uniqueData.sort();
+                select.empty().append('<option value="">Todos</option>');
+                
+                uniqueData.forEach(function (d) {
+                    var text = $('<div>').html(d).text();
+                    if (text && text.trim() !== "") {
+                        select.append('<option value="' + text + '">' + text + '</option>');
+                    }
+                });
+
+                if (currentVal) {
+                    select.val(currentVal);
+                }
+            });
+        }
+
+		// Controla a visibilidade do cabeçalho e do botão de tema ao rolar a página em dispositivos móveis
+		const headerContainer = document.querySelector('.fixed-top-container');
+
+		function isPhoneLike() {
+			return Math.min(window.innerWidth, window.innerHeight) <= 768;
+		}
+
+		function updateHeaderVisibility(offset) {
+			if (!isPhoneLike()) return;
+
+			if (offset > 5) {
+				headerContainer.classList.add('hidden-header');
+				themeToggle.classList.add('hidden-header');
+			} else {
+				headerContainer.classList.remove('hidden-header');
+				themeToggle.classList.remove('hidden-header');
+			}
+		}
+
+		window.addEventListener('scroll', function () {
+			const offset = window.scrollY || document.documentElement.scrollTop;
+			updateHeaderVisibility(offset);
+		});
+
+    });
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register("/service-worker.js")
+      .then(function (registration) {
+        console.log("Service Worker registrado:", registration.scope);
+      })
+      .catch(function (error) {
+        console.log("Erro ao registrar o Service Worker:", error);
+      });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "name": "Rede Credenciada - Select Saúde Premium",
+  "short_name": "Select Saúde",
+  "description": "Consulta rápida e responsiva da rede credenciada Select Saúde Premium.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#794ef4",
+  "icons": [
+    {
+      "src": "/img/logo_select_operadora_192px.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/logo_select_operadora_512px.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ver credenciados",
+      "short_name": "Credenciados",
+      "description": "Ir direto para a tabela de credenciados.",
+      "url": "/#tabelaCredenciados"
+    }
+  ]
+}

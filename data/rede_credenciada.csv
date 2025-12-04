@@ -1,0 +1,266 @@
+Tipo,Prestador,Cidade,Produto,PS Adulto,PS Pediatrico,Consultas,Internação,Maternidade,Básica 100/200,Premium,Smart,Obs
+Hospital,HOSPITAL DE AVILA,RECIFE,Select Recife,Sim,Não,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,HOSPITAL PERPETUO SOCORRO,GARANHUNS,Select Premium,Sim,Não,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,CASA DE SAÚDE E MATERNIDADE SÃO SEBASTIÃO,CABO DE SANTO AGOSTINHO,Select Recife,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,-
+Hospital,HOSPITAL SÃO VICENTE,SERRA TALHADA,Select Sertão,Sim,Não,Sim,Sim,Sim,Sim,Sim,Sim,-
+Hospital,CASA DE SAÚDE SANTA EFIGENIA LTDA,CARUARU,Select Agreste,Sim,Sim,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,NEUROCARDIO,PETROLINA,Select Sertão,Sim,Sim,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,CENTRO HOSPITALAR ALBERT SABIN S/A,RECIFE,Select Recife,Sim,Não,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,HOSPITAL DE FRATURAS E REABILITACAO,RECIFE,Select Recife,Sim,Sim,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,CENTRO HOSPITALAR SANTA MARIA,VITORIA DE SANTO ANTÃO,Select Recife,Sim,Não,Sim,Sim,Sim,Sim,Sim,Sim,-
+Hospital,HOSPITAL IMACULADA CONCEICAO,PETROLINA,Select Sertão,Sim,Sim,Não,Sim,Não,Sim,Sim,Sim,-
+Hospital,CLÍNICA TERAPEUTICA VIRTUDE,RECIFE,Select Recife,Não,Não,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,HOPE,RECIFE,Select Recife,Sim,Sim,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,HOSPITAL SANTA JOAΝΑ RECIFE,RECIFE,Select Recife,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,-
+Hospital,HOSPITAL SANTA FE,RECIFE,Select Recife,Sim,Não,Não,Sim,Não,Sim,Sim,Sim,-
+Hospital,HVISÃO,RECIFE,Select Recife,Não,Não,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,HOSPITAL DE OLHOS SANTA LUZIA LTDA,RECIFE,Select Recife,Sim,Sim,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,HOSPITAL DE ORTOPEDIA,RECIFE,Select Recife,Sim,Sim,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,HOSPITAL MEMORIAL ARCOVERDE,ARCOVERDE,Select Agreste,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,-
+Hospital,HOSPITAL MEMORIAL SÃO GABRIEL,CARUARU,Select Agreste,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,-
+Hospital,HOSPITAL SANTA TERESINHA,RECIFE,Select Recife,Sim,Não,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,HOSPITAL SÃO JOSE,PESQUEIRA,Select Agreste,Sim,Não,Sim,Sim,Sim,Sim,Sim,Sim,-
+Hospital,HOSPITAL MEMORIAL GUARARAPES,JABOATÃO DOS GUARARAPES,Select Recife,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,-
+Hospital,IOR,RECIFE,Select Recife,Sim,Não,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,HOSPITAL MEMORIAL PETROLINA,PETROLINA,Select Sertão,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,-
+Hospital,INTENSIVA DAY HOSPITAL,CARUARU,Select Agreste,Não,Não,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,HOSPITAL CIDADE PATRIMONIO,OLINDA,Select Recife,Sim,Não,Não,Sim,Não,Sim,Sim,Sim,-
+Hospital,CLINIC ALL-SAÚDE,JABOATÃO DOS GUARARAPES,Select Recife,Sim,Sim,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,REAL HOSPITAL PORTUGUES,RECIFE,Select Recife,Sim,Sim,Sim,Sim,Não,Não,Sim,Não,PRESTADOR EXCLUSIVO PREMIUM
+Hospital,HOSPITAL CENTRAL NOSSA SENHORA APARECIDA,PAULISTA,Select Recife,Sim,Não,Sim,Sim,Não,Sim,Sim,Sim,-
+Hospital,HOSPITAL MONTE SINΑΙ LTDA,GARANHUNS,Select Premium,Sim,Não,Sim,Sim,Sim,Sim,Sim,Sim,-
+Imagem,CAROL BRANDAO IMAGEM E DIAGNÓSTICO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,FERRER DIAGNÓSTICOS POR IMAGEM,VITORIA DE SANTO ANTÃO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,PREVIMAGEM LTDA,PAULISTA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,CENTRO DE DIAGNÓSTICO VALGUEIRO,ARCOVERDE,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,LUCILO MARANHAO DIAGNÓSTICOS,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,DIAGMAX MEDICINA DIAGNOSTICA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,(FLEURY S.A.),RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,CDI - CENTRO DE DIAGNÓSTICO CLÍNICO E POR IMAGEM,PETROLINA,Select Sertão,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,DIA MEDICINA NUCLEAR,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,NEURUS,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,IMAX DIAGNÓSTICO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,DERBIMAGEM,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,DIAGIMAGEM,VITÓRIA DE SANTO ANTÃO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Imagem,CLINICA DE ULTRASSONOGRAFIA IMAGO,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,CEDILA - CENTRO DE DIAGNÓSTICO CLINICO E LABORATOR,PETROLINA,Select Sertão,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,DIAGNÓSTICOS DA AMERICA S.A,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,DIAGMAX MEDICINA DIAGNOSTICA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO LEAL LAB,ARCOVERDE,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LACIAC DIAGNÓSTICOS,BEZERROS,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,CITOMAXX,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO DE HISTOPATOLOGIA HORACIO FITTIPALDI L,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES,CABO DE SANTO AGOSTINHO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES,GOIANA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES,PAULISTA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIOS MARCELO MAGALHAES,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES,CARPINA,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES,VITORIA DE SANTO ANTÃO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES,TIMBAÚBA,Select Premiurn,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LARAH LABORATÓRIO DE REPRODUCAO ASSISTIDA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,CITOLAG,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO SILVANO SARMENTO,VITORIA DE SANTO ANTÃO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LAMEDS,BELO JARDIM,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,DIAGCLIN GMCYTO,BELO JARDIM,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO ADOLFO LUTZ,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,MAIS EXAMES LTDA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,LABORATÓRIO FERNANDO TRAVASSOS,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,CENTRO DIAGNOSTICO OLIVEIRA ΡΕΙΧΟΤΟ,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,CENTRO ESPECIALIZADO EM ANÁLISESS CLÍNICAS,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,FLEURY DERBY 550,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,ALMEIDA LABORATORIO DE ANALISES CLINICAS,VENTUROSA,Select Premium Pernambuco,-,-,-,-,-,Não,Sim,Sim,-
+Laboratório,UNIMAGEM,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ABRASER CLÍNICA MULTIDISCIPLINAR,GRAVATÁ,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CAROL BRANDAO IMAGEM E DIAGNÓSTICO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ACCEPT SAÚDE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ACCEPT SAÚDE PAULISTA,PAULISTA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ACOLHER SAÚDE,OLINDA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,DRA. AFETO TERAPIAS INTEGRADAS,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,MEDVIDA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ALAMO CLÍNICA MULTIDISCIPLINAR,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,BOA VISTA MÉDICAL CENTER,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ALESSANDRA DE FREITAS CARNEIRO LIRA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ALEXANDRE FAEIRSTEIN,CABO DE SANTO AGOSTINHO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ANESTESIA E SERVIÇOS MÉDICOS,PETROLINA,Select Sertão,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ESPACO DESENVOLVER,VITORIA DE SANTO ANTÃO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,OCULAR DO CABO,CABO DE SANTO AGOSTINHO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,FASES-ESPACO DE DESENVOLVIMENTO MULTIDISCIPLINAR,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA MAIS SAÚDE,VITORIA DE SANTO ANTÃO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,OTOALERG,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SPA TERAPEUTICO RENASCER,AGRESTINA,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CEDICA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,VIVARE FISIOTERAPIA E SAÚDE,PAULISTA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CEFOPE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CEMED INTEGRAL DE TERAPIAS E DIAGNÓSTICOS LTDA,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,BORIS BERENSTEIN,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CENTRO DE DIAGNÓSTICO JOSE ROCHA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ESPACO EQUILIBRIO,OLINDA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CENTRO MÉDICO E FRATURAS LTDA,PAULISTA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CENTRO MÉDICO SINERGIA,OLINDA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CMULHER,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CENTRO REABILITE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLIMERE CLÍNICA DE MEDICINA EM GRUPO E REABILITA,OLINDA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ACOLHER,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA COGNITTIVE DE DESENVOLVIMENTO HUMANO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CATR-CLÍNICA DE ATENDIMENTO TERAPEUTICO DO RECIF,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,EQUILIBRIO,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,REGENERE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,HOPE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,HOPE,OLINDA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA DE SAÚDE DO CABO,CABO DE SANTO AGOSTINHO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA DR ERASTO FILHO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA FLAVIO KREIMER LTDA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA IMPAR ESPECIALIDADES,GRAVATÁ,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CISD MED,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,DMI,BELO JARDIM,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA MÉDICA PAULA BARRADAS,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA MOVE FISIOTERAPΙΑ,CARPINA,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA DIOCLECIO COUTINHO,CARPINA,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA SÃO GABRIEL LTDA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA SER EMPATICO MULTIDISCIPLINAR,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA VIDA & SAÚDE,CARPINA,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLINLAB,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLINUR LTDA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLIPPSIN,OLINDA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLIPPSIN,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLIPPSIN CLÍNICA DE PSICOLOGIA LTDA,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA AFLORAR,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,COVI,VITORIA DE SANTO ANTÃO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,DESPERTAR TERAPIAS AVANCADAS,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,E. GOEDERT CENTRO MÉDICO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,AUDAZ CLÍNICA INTEGRADA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,EQUILIBRIUM CORPORE,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA ESPACO MED POPULAR,OLINDA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ESPACO TRANSFORMAR - TERAPIAS INTEGRATIVAS,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,EVOLUIR ACOMPANHAMENTO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,FISIO MAIS,CAMARAGIBE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,FREE LIFE SAÚDE E TERAPΙΑ,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,GRUNER,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,HOPE,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,HOPE HOSPITAL DE OLHOS DE PERNAMBUCO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,INSTITUTO FELICIDAD,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,INTERNE BRASIL,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,IFA CARDIO & MEDICINA ESPORTIVA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,LAMEDS,CUSTODIA,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLEE-CLÍNICA DE LONGEVIDADE E EMAGRECIMENTO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,FISIONORTE,PAULISTA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ISIS CLÍNICA DE ESPECIALIDADES,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CCEFOPE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,MARIA DAS GRACAS ARAUJO DA ROCHA,OLINDA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,VITA SAÚDE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,MULTIHEMO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SOS NEURO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,OFTALMO SANTA LUZIA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,H.OLHOS,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,OLIVER - CENTRO DE SAÚDE E ACUPUNTURA,PAULISTA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ORTHONEURO,ABREU E LIMA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ORTO TRAUMA ORTOPEDIA DO AGRESTE,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ORTOSANI SAÚDE EM EQUILIBRIO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,PC ORG,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,FISIOTOP,OLINDA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,TEAMOR GRAVATA,GRAVATÁ,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,RADIOTERAPIA ONCOCLÍNICAS RECIFE S.A,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,RECANTO DO GIRASSOL CLÍNICA TERAPEUTICA,BUIQUE,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA RECOVER,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,REDE EVA EM SAÚDE,CAMARAGIBE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,MULTITERAPIAS E DIAGNÓSTICOS,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,FISIOECIA.COM,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA ESTIMULAR MULTIDISCIPLINAR,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SÃO GABRIEL DIAGNÓSTICOS,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SENEURO,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,PRONTOMED,PETROLINA,Select Sertão,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLIPPSIN CLÍNICA DE PSICOLOGIA,GRAVATÁ,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA LUDOTE,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,7 ESTIMULOS TERAPIAS INTEGRADAS,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ENDOIMAGEM,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,TEA+,PETROLINA,Select Sertão,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,MULTI ESTÍMULOS,LIMOEIRO,Select Prenium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,PEDCLIN ESPECIALIDADES PEDIÁTRICAS,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA MOVIMENTO,BEZERROS,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ESPAÇO DESENVOLVER TEA,ESCADA,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,COLORIDAMENTE CLÍNICA MULTIDISCIPLINAR,PALMARES,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ESPAÇO SAÚDE VIDA,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,FLOR DE LOTUS,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ARRUDA DIAGNÓSTICOS,BEZERROS,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLIPPSIN-CLÍNICA DE PSICOLOGIA, NEUROPSICOLOGIA E ESPECIAL,PAULISTA,Select Recife,-,-,-,-,-,Não,Sim,PRESTADOR EXCLUSIVO PREMIUM
+Clínica,CLÍNICA DA CRIANCA,BELO JARDIM,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SEQUIPE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,OLINDA MÉDICAL CENTER,OLINDA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,TOP SAÚDE,CABO DE SANTO AGOSTINHO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,PRO VIDA FISIOTERAPΙΑ,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,GORE OFTALMOLOGIA NORTE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ORTOPEDIA RECIFE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,MULTIMED,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,COTE,PETROLINA,Select Sertão,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,NEUROPSI SONIA FERNANDES,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,LUIZ FELIPE LYNCH DE MORAES,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ACOLHER ESPAÇO TERAPÊUTICO MULTIDISCIPLINAR DO CABO,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,INSTITUTO DE UROLOGIA E CIRURGIA DE CARUARU,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,FISIOTERAPIA SÃO GABRIEL,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,MEMORIAL SANTA QUITERIA,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,GASTRO PE,OLINDA,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,BIOFISIO CLÍNICA DE FISIOTERAPIA E SAÚDE,SERRA TALHADA,Select Sertão,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,FR SAÚDE,CAMARAGIBE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,DAVITA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,HYDRO MASTER REABILITAÇÃO INTEGRADA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,NEO OFTALMOLOGIA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CEO CENTRO ESPECIALIZADO EM OFTALMOLOGIA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ESPAÇO ACOLHER CABO,CABO DE SANTO AGOSTINHO,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,POLLYANNE ALVES,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,DOC VIDA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,OTOCLIN,PETROLINA,Select Sertão,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,NOVO SER KIDS,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,LEALGASTRO SERVIÇOS MÉDICOS,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SERVIÇOS MÉDICOS DE DIAGNÓSTICOS DE CARUARU LTDA S,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SIOMARA SALES CAMPELO & CIA. LTDA,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CEAM,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,PULSE VIDA SAÚDE LTDA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,MEDEIROS & LEITE SERVIÇOS DE SAÚDE,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ESTIMULAR ABA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,IANODA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SEMPRE SAÚDE,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLÍNICA DESPERTAR,BELO JARDIM,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CEDIP GRAVATA LTDA,GRAVATÁ,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ESPACO MACIEL,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CEMEC CENTRO DE MEDICINA ESPECIALIZADA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SANTA EFIGENIA FISIOTERAPIA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,NEPHRONCARE,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,DINIZ E DINIZ & CIA LTDA,GARANHUNS,Select Premiurn,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,VITALECER CLÍNICA,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,IMAG MEDICINA DIAGNOSTICA,GARANHUNS,Select Prenium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,VITALAB,PALMARES,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,LABORATÓRIO DE ANÁLISESS DO CARPINA,CARPINA,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,IMAGEMCOR TECNOLOGIA EM SAÚDE,BELO JARDIM,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CENTRO DE ESPECIALIDADES MÉDICAS,JABOATÃO DOS GUARARAPES,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,OFTALMO PE,GARANHUNS,Select Pernambuco,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,REAL ORTOPEDIA CTO,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLINIC PELVE FISIOTERAPIA PELVICA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,INSTITUTO ENTRELARES DE CUIDADOS MULTIDISCIPLINAR,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ESPACO TERAPEUTICO HERVILA MARIA,PALMARES,Select Pernambuco,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ICURA-INSTITUTO DE CUIDADOS E REABILITACAO AVANCADA,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,RECRIAR NUCLEO TERAPEUTICO,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,INSTITUTO DE OLHOS CLOVIS PAIVA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SOUTO & SOUTO TERAPIA INTEGRADAS LTDA,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLIMCENTER CLINICA MEDICA CENTRAL,SANTA CRUZ DO CAPIBARIBE,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CONEXÃO INTERVENCAO COMPORTAMENTAL,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,EXCELLENCE MULTIDISCIPLINARY CLINIC,IGARASSU,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,NEODIAG-MEDICINA DIAGNOSTICA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,S8 FISIOTERAPIA EPILATES,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,UNIDADE DE FISIOTERAPIA INTEGRADA UFI,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ARCOVERDE CENTRO DE DIAGNOSTICO,ARCOVERDE,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,IHENE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,D+ SAUDE CENTRO MEDICO,CARPINA,Select Premiurn,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CLINICOR,CARPINA,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ESPACO ACOLHER DESENVOLVIMENTO INFANTIL,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,GASTROMED SERVICOS MEDICOS E DIAGNOSTICOS,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,ENDOCRINOLOGIA PERNAMBUCANA,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,THIAGO CAVALCANTE SERVICOS,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SANTA EFIGENIA ORTOPEDIA E TRAUMATOLOGIA LTDA,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,PSIQUE,ALTINHO,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,INTEGRARTE PSICOLOGIA CLINICA,PALMARES,Select Pernambuco,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,CENTRO MEDICO DO RECIFE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,MEMORIAL SAO MIGUEL,CARUARU,Select Agreste,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,OTOCENTER GARANHUNS,GARANHUNS,Select Premium,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,SEMEAR TEREAPIAS,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
+Clínica,INSTITUTO DE ONCOLOGIA DO NORDESTE - IONE,RECIFE,Select Recife,-,-,-,-,-,Não,Sim,Sim,-
