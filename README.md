@@ -10,9 +10,9 @@ Consulta interativa da rede credenciada da Select Saúde PE.<br>Convertida do PD
 
 Disponível em:
 
-🔗 GitHub Pages: https://allanlauzid.github.io/redecredenciada-selectsaude-pe/
-
 🔗 Netlify: https://selectsaude-pe.netlify.app/
+
+🔗 GitHub Pages (PWA não funciona): https://allanlauzid.github.io/redecredenciada-selectsaude-pe/
 
 🔗 PDF original: https://github.com/allanlauzid/redecredenciada-selectsaude-pe/blob/main/docs/rede-credenciada-PE-2025-09-30.pdf
 
