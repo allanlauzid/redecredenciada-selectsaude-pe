@@ -134,8 +134,16 @@
 			transition: width 0.3s ease, background-color 0.3s ease;
 			white-space: nowrap;
 			box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+
+			outline: none !important;
 		}
 
+		.theme-toggle:focus,
+		.theme-toggle:active {
+			outline: none !important;
+			border-color: var(--primary-color) !important;
+			
+		}
 		.theme-toggle .icon {
 			display: flex;
 			align-items: center;
@@ -608,6 +616,62 @@
 				left: auto;
 			}
 		}
+		.center-header {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 4px; /* espaço pequeno entre título e botão */
+		}
+		.download-wrapper {
+			text-align: right;      /* botão fica discreto no canto superior direito da tabela */
+			margin-bottom: 4px;
+		}
+
+		.download-btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 4px;
+
+			padding: 0;
+			margin: 0;
+
+			font-size: 0.55rem;
+			font-weight: 400;
+
+			background: transparent;
+			color: #888;            /* cinza clarinho */
+			border: none;
+
+			opacity: 0.7;
+			text-decoration: none;
+			white-space: nowrap;
+			cursor: pointer;
+		}
+
+		.download-btn:hover {
+			opacity: 1;
+			color: #5b3bb4;         /* só destaca na interação */
+			text-decoration: underline;
+		}
+
+		.download-icon {
+			width: 11px;
+			height: 11px;
+			display: inline-block;
+			opacity: 0.7;
+		}
+
+		body.dark-mode .download-btn {
+			color: #bdbdbd;
+		}
+
+		body.dark-mode .download-btn:hover {
+			color: #9c7dff;
+		}
+
+		body.dark-mode .download-icon {
+			opacity: 0.8;
+		}
 
 	</style>
 </head>
@@ -641,14 +705,15 @@
                         </div>
                     </div>
                     
-                    <h1 style="margin-bottom: 5px; margin-top: 5px;">
-                        Rede Credenciada - Select Saúde Premium/PE
-                        <br> 
-                        <span id="lastUpdatedDate" style="color: #e74c3c; font-size: 0.6em; font-weight: normal;">
-                            Atualizada em 30/09/2025
-                        </span>
-                    </h1>
-
+					<div class="center-header">
+						<h1 style="margin-bottom: 5px; margin-top: 5px;">
+							Rede Credenciada - Select Saúde Premium/PE
+							<br> 
+							<span id="lastUpdatedDate" style="color: #e74c3c; font-size: 0.6em; font-weight: normal;">
+								Atualizada em 30/09/2025
+							</span>
+						</h1>
+					</div>
                     <!-- Lado direito do cabeçalho: logo da Select Saúde com link para o site oficial -->
                     <div>
                         <a href="https://selectoperadora.com.br/" target="_blank">
@@ -665,7 +730,12 @@
                 <div id="loading">
                     <span class="spinner"></span>Carregando dados da rede...
                 </div>
-
+				<div class="download-wrapper">
+					<a href="docs/rede-credenciada-PE-2025-09-30.pdf" download class="download-btn">
+						<img src="img/icon_pdf.png" alt="PDF" class="download-icon">
+						Baixar PDF original
+					</a>
+				</div>
                 <div class="table-wrapper">
                     <table id="tabelaCredenciados" class="display nowrap" style="width:100%;">
                         <thead>
