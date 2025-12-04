@@ -14,6 +14,8 @@ Disponível em:
 
 🔗 Netlify: https://selectsaude-pe.netlify.app/
 
+🔗 PDF original: https://github.com/allanlauzid/redecredenciada-selectsaude-pe/blob/main/docs/rede-credenciada-PE-2025-09-30.pdf
+
 ---
 
 # 🏥 Rede Credenciada – Select Saúde Premium (PWA)
