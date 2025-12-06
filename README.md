@@ -117,3 +117,17 @@ O PDF original foi transformado em uma **tabela interativa** com filtros, busca 
 * PapaParse
 * PWA (Service Worker + Manifest)
 * Fluxo Vibe Coding com IA
+
+---
+
+## 🔧 Futuras Correções
+
+* Bug na pesquisa no iPhone: ao digitar no campo de busca, a barra de pesquisa desaparece (Safari e Chrome).
+
+* Cabeçalho: ajustar alinhamento e responsividade.
+
+* Logo do PWA: corrigir proporção e área de recorte, pois a imagem aparece cortada.
+
+* PWA no iPhone: usar caminhos absolutos (/) em vez de relativos (./) para permitir instalação no iOS.
+
+* Layout mobile: testar e validar o layout otimizado para dispositivos móveis.
