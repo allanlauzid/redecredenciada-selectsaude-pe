@@ -18,9 +18,9 @@ Disponível em:
 
 ---
 
-# 🏥 Rede Credenciada – Select Saúde Premium (PWA)
+# 🏥 Rede Credenciada – Select Saúde PE (PWA)
 
-Ferramenta criada para consultar a **rede credenciada da Select Saúde Premium**, convertendo um **PDF bruto disponibilizado por um corretor** em um **site responsivo, interativo e instalável como PWA** (PDF anexado como `rede-credenciada-PE-2025-09-30.pdf`).
+Ferramenta criada para consultar a **rede credenciada da Select Saúde PE**, convertendo um **PDF bruto disponibilizado por um corretor** em um **site responsivo, interativo e instalável como PWA** (PDF anexado como `rede-credenciada-PE-2025-09-30.pdf`).
 O projeto demonstra como Vibe Coding pode transformar materiais estáticos em aplicações úteis no dia a dia.
 
 > ⚠️ Projeto pessoal para estudo e portfólio, sem vínculo oficial com a operadora.
