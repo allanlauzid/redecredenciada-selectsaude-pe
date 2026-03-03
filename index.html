@@ -459,9 +459,6 @@ body{
          style="font-style:italic"
          id="tspan1">Operadora de Planos de Saúde</tspan></tspan></text></svg>
   <div class="hero-subtitle">Pernambuco</div>
-  	<span id="lastUpdatedDate" style="color: #e74c3c; font-size: 0.8em; font-weight: normal;">
-		Atualizada em 30/09/2025
-	</span>
   <p class="hero-desc">Encontre hospitais, clínicas, laboratórios e centros de imagem</p>
 </div>
 
@@ -633,67 +630,234 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 <script>
-function getFilteredData(){
-  var q=searchInput.value.toLowerCase();
-  var tipo=filterTipo.value;
-  var cidade=filterCidade.value;
-  var produto=filterProduto.value;
-  return DATA.filter(function(r){
-    if(q&&r.Prestador.toLowerCase().indexOf(q)===-1)return false;
-    if(tipo&&r.Tipo!==tipo)return false;
-    if(cidade&&r.Cidade!==cidade)return false;
-    if(produto&&r.Produto!==produto)return false;
-    return true;
-  });
-}
-function generatePDF(){
-  var btn=document.getElementById('pdfBtn');
-  btn.textContent='Gerando PDF...';
-  btn.disabled=true;
-  setTimeout(function(){
-    var jsPDF=window.jspdf.jsPDF;
-    var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    var items=getFilteredData();
-    var pw=210,ph=297,mx=8,my=8,cw=pw-2*mx;
-    var tc={'Hospital':[44,62,80],'Imagem':[41,128,185],'Laboratório':[39,174,96],'Clínica':[142,68,173]};
-    var sk=['PS Adulto','PS Pediatrico','Consultas','Internação','Maternidade','Básica 100/200','Premium','Smart'];
-    var ss=['PSAd','PSPed','Cons','Inter','Mat','Bás','Prem','Smt'];
-    function fs(v){return v==='Sim'?'S':(v==='Não'?'N':'-');}
-    doc.setFont('helvetica','bold');doc.setFontSize(14);
-    doc.text('SELECT - Rede Credenciada',pw/2,my+6,{align:'center'});
-    doc.setFont('helvetica','normal');doc.setFontSize(7);
-    doc.text('Total de prestadores: '+items.length,pw/2,my+11,{align:'center'});
-    var y=my+16,bw=20,lw=cw*0.47,rh=12;
-    for(var i=0;i<items.length;i++){
-      var r=items[i];
-      if(y+rh+2>ph-my){doc.addPage();y=my;}
-      var c=tc[r.Tipo]||[100,100,100];
-      doc.setFillColor(c[0],c[1],c[2]);
-      doc.rect(mx,y,bw,rh,'F');
-      doc.setFont('helvetica','bold');doc.setFontSize(7);
-      doc.setTextColor(255,255,255);
-      doc.text(r.Tipo,mx+bw/2,y+rh/2+1,{align:'center'});
-      var lx=mx+bw+2;
-      doc.setTextColor(26,26,46);doc.setFont('helvetica','bold');doc.setFontSize(9);
-      doc.text(r.Prestador,lx,y+4.5,{maxWidth:lw-2});
-      doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(22,33,62);
-      doc.text(r.Cidade,lx,y+9,{maxWidth:lw-2});
-      doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(68,68,68);
-      doc.text(r.Produto,pw-mx,y+4,{align:'right'});
-      var sp=[];for(var j=0;j<sk.length;j++)sp.push(ss[j]+':'+fs(r[sk[j]]));
-      doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(100,100,100);
-      doc.text(sp.join('  '),pw-mx,y+8,{align:'right'});
-      if(r.Obs){doc.setFont('helvetica','bolditalic');doc.setFontSize(5.5);doc.setTextColor(192,57,43);doc.text(r.Obs,pw-mx,y+11.5,{align:'right'});}
-      doc.setDrawColor(200,200,200);doc.setLineWidth(0.2);
-      doc.line(mx,y+rh+0.3,pw-mx,y+rh+0.3);
-      y+=rh+1;
+// Minimal PDF generator - no external dependencies
+var SimplePDF=(function(){
+  function P(){this.pages=[];this.fonts={};this.objs=[];this.pageW=595.28;this.pageH=841.89;this.newPage();}
+  P.prototype.newPage=function(){this.pages.push({cmds:[]});this.currentPage=this.pages[this.pages.length-1];};
+  P.prototype.cmd=function(s){this.currentPage.cmds.push(s);};
+  P.prototype.setFont=function(bold,italic){this.fontStyle=(bold?'bold':'')+(italic?'italic':'');};
+  P.prototype.setFontSize=function(s){this.fontSize=s;};
+  P.prototype.setColor=function(r,g,b){this.cmd((r/255).toFixed(3)+' '+(g/255).toFixed(3)+' '+(b/255).toFixed(3)+' rg');};
+  P.prototype.setStrokeColor=function(r,g,b){this.cmd((r/255).toFixed(3)+' '+(g/255).toFixed(3)+' '+(b/255).toFixed(3)+' RG');};
+  P.prototype.setLineWidth=function(w){this.cmd((w*2.835).toFixed(2)+' w');};
+  P.prototype.line=function(x1,y1,x2,y2){var f=2.835;this.cmd((x1*f).toFixed(2)+' '+(this.pageH-y1*f).toFixed(2)+' m '+(x2*f).toFixed(2)+' '+(this.pageH-y2*f).toFixed(2)+' l S');};
+  P.prototype.rect=function(x,y,w,h){var f=2.835;this.cmd((x*f).toFixed(2)+' '+(this.pageH-(y+h)*f).toFixed(2)+' '+(w*f).toFixed(2)+' '+(h*f).toFixed(2)+' re f');};
+  P.prototype.text=function(str,x,y,opts){
+    if(!str)return;
+    var f=2.835,px=x*f,py=this.pageH-y*f;
+    var fontKey=this.fontStyle==='bold'?'/F2':this.fontStyle==='italic'?'/F3':'/F1';
+    var sz=this.fontSize||10;
+    var encoded=this._encodeText(str);
+    if(opts&&opts.align==='center'){var tw=str.length*sz*0.4;px-=tw/2;}
+    if(opts&&opts.align==='right'){var tw2=str.length*sz*0.4;px-=tw2;}
+    if(opts&&opts.maxWidth){var maxPx=opts.maxWidth*f;var charW=sz*0.4;var maxChars=Math.floor(maxPx/charW);if(str.length>maxChars)str=str.substring(0,maxChars-1)+'…';encoded=this._encodeText(str);}
+    this.cmd('BT '+fontKey+' '+sz+' Tf '+(px).toFixed(2)+' '+(py).toFixed(2)+' Td ('+encoded+') Tj ET');
+  };
+  P.prototype._encodeText=function(str){
+    return str.replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+  };
+  P.prototype._latinEncode=function(str){
+    var out='';
+    for(var i=0;i<str.length;i++){
+      var c=str.charCodeAt(i);
+      if(c<256)out+=str[i];
+      else{
+        // Map common chars
+        var map={'ã':'a','á':'a','à':'a','â':'a','é':'e','ê':'e','í':'i','ó':'o','ô':'o','õ':'o','ú':'u','ü':'u','ç':'c','Ã':'A','Á':'A','À':'A','Â':'A','É':'E','Ê':'E','Í':'I','Ó':'O','Ô':'O','Õ':'O','Ú':'U','Ü':'U','Ç':'C','ñ':'n','Ñ':'N'};
+        out+=(map[str[i]]||'?');
+      }
     }
-    doc.save('SELECT_Rede_Credenciada.pdf');
-    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M12 16l-6-6h4V4h4v6h4l-6 6z"/><path d="M20 18H4v2h16v-2z"/></svg> Download em PDF';
-    btn.disabled=false;
-  },50);
+    return out;
+  };
+  P.prototype.save=function(filename){
+    var o=[];var xref=[];var pos=0;
+    function w(s){o.push(s);pos+=s.length+1;}
+    w('%PDF-1.4');
+    // Obj 1: Catalog
+    xref[1]=pos;w('1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj');
+    // Obj 2: Pages
+    var pageRefs='';for(var i=0;i<this.pages.length;i++)pageRefs+=(4+i*2)+' 0 R ';
+    xref[2]=pos;w('2 0 obj<</Type/Pages/Kids['+pageRefs+']/Count '+this.pages.length+'>>endobj');
+    // Obj 3: Font Resources
+    xref[3]=pos;w('3 0 obj<</F1 '+((this.pages.length*2+4))+' 0 R/F2 '+((this.pages.length*2+5))+' 0 R/F3 '+((this.pages.length*2+6))+' 0 R>>endobj');
+
+    // Page objects and content streams
+    var nextObj=4;
+    for(var p=0;p<this.pages.length;p++){
+      var pageObj=nextObj;
+      var contObj=nextObj+1;
+      var stream=this.pages[p].cmds.join('\n');
+      var streamBytes=stream.length;
+      xref[pageObj]=pos;
+      w(pageObj+' 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 '+this.pageW.toFixed(2)+' '+this.pageH.toFixed(2)+']/Contents '+contObj+' 0 R/Resources<</Font 3 0 R>>>>endobj');
+      xref[contObj]=pos;
+      w(contObj+' 0 obj<</Length '+streamBytes+'>>stream\n'+stream+'\nendstream\nendobj');
+      nextObj+=2;
+    }
+
+    // Font objects (Helvetica, Helvetica-Bold, Helvetica-Oblique)
+    var fontNames=['Helvetica','Helvetica-Bold','Helvetica-Oblique'];
+    for(var fi=0;fi<3;fi++){
+      xref[nextObj]=pos;
+      w(nextObj+' 0 obj<</Type/Font/Subtype/Type1/BaseFont/'+fontNames[fi]+'/Encoding/WinAnsiEncoding>>endobj');
+      nextObj++;
+    }
+
+    // xref
+    var xrefPos=pos;
+    w('xref');
+    w('0 '+nextObj);
+    w('0000000000 65535 f ');
+    for(var xi=1;xi<nextObj;xi++){
+      var xs=String(xref[xi]||0);
+      while(xs.length<10)xs='0'+xs;
+      w(xs+' 00000 n ');
+    }
+    w('trailer<</Size '+nextObj+'/Root 1 0 R>>');
+    w('startxref');
+    w(String(xrefPos));
+    w('%%EOF');
+
+    var pdfStr=o.join('\n');
+    var blob=new Blob([pdfStr],{type:'application/pdf'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;a.download=filename;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+  return P;
+})();
+
+function generatePDF(){
+  try{
+    var btn=document.getElementById('pdfBtn');
+    btn.textContent='Gerando PDF...';
+    btn.disabled=true;
+
+    setTimeout(function(){
+      try{
+        var doc=new SimplePDF();
+
+        var q=document.getElementById('searchInput').value.toLowerCase();
+        var tipo=document.getElementById('filterTipo').value;
+        var cidade=document.getElementById('filterCidade').value;
+        var produto=document.getElementById('filterProduto').value;
+        var items=DATA.filter(function(r){
+          if(q && r.Prestador.toLowerCase().indexOf(q)===-1) return false;
+          if(tipo && r.Tipo!==tipo) return false;
+          if(cidade && r.Cidade!==cidade) return false;
+          if(produto && r.Produto!==produto) return false;
+          return true;
+        });
+
+        var pw=210,ph=297,mx=8,my=8;
+        var tipoColors={
+          'Hospital':[44,62,80],
+          'Imagem':[41,128,185],
+          'Laboratório':[39,174,96],
+          'Clínica':[142,68,173]
+        };
+        var svcKeys=['PS Adulto','PS Pediatrico','Consultas','Internação','Maternidade','Básica 100/200','Premium','Smart'];
+        var svcShort=['PSAd','PSPed','Cons','Inter','Mat','Bás','Prem','Smt'];
+
+        function fmtSvc(val){
+          if(val==='Sim') return 'S';
+          if(val==='Não') return 'N';
+          return '-';
+        }
+
+        // Title
+        doc.setFont(true,false);
+        doc.setFontSize(14);
+        doc.setColor(26,26,46);
+        doc.text('SELECT - Rede Credenciada',pw/2,my+6,{align:'center'});
+        doc.setFont(false,false);
+        doc.setFontSize(7);
+        doc.setColor(100,100,100);
+        doc.text('Total de prestadores: '+items.length,pw/2,my+11,{align:'center'});
+
+        var y=my+16;
+        var badgeW=20;
+        var leftW=(pw-2*mx)*0.47;
+        var rowH=12;
+
+        for(var i=0;i<items.length;i++){
+          var r=items[i];
+          if(y+rowH+2>ph-my){doc.newPage();y=my;}
+
+          // Badge
+          var tc=tipoColors[r.Tipo]||[100,100,100];
+          doc.setColor(tc[0],tc[1],tc[2]);
+          doc.rect(mx,y,badgeW,rowH);
+          doc.setFont(true,false);
+          doc.setFontSize(7);
+          doc.setColor(255,255,255);
+          doc.text(r.Tipo,mx+badgeW/2,y+rowH/2+1,{align:'center'});
+
+          // Prestador
+          var lx=mx+badgeW+2;
+          doc.setColor(26,26,46);
+          doc.setFont(true,false);
+          doc.setFontSize(9);
+          doc.text(doc._latinEncode(r.Prestador||''),lx,y+4.5,{maxWidth:leftW-2});
+
+          // Cidade
+          doc.setFont(false,false);
+          doc.setFontSize(8);
+          doc.setColor(22,33,62);
+          doc.text(doc._latinEncode(r.Cidade||''),lx,y+9,{maxWidth:leftW-2});
+
+          // Produto
+          doc.setFont(true,false);
+          doc.setFontSize(7.5);
+          doc.setColor(68,68,68);
+          doc.text(doc._latinEncode(r.Produto||''),pw-mx,y+4,{align:'right'});
+
+          // Services
+          var parts=[];
+          for(var j=0;j<svcKeys.length;j++){
+            var val=r[svcKeys[j]]||'-';
+            parts.push(svcShort[j]+':'+fmtSvc(val));
+          }
+          doc.setFont(false,false);
+          doc.setFontSize(6.5);
+          doc.setColor(100,100,100);
+          doc.text(doc._latinEncode(parts.join('  ')),pw-mx,y+8,{align:'right'});
+
+          // Obs
+          if(r.Obs && r.Obs.length>0){
+            doc.setFont(false,true);
+            doc.setFontSize(5.5);
+            doc.setColor(192,57,43);
+            doc.text(doc._latinEncode(r.Obs),pw-mx,y+11.5,{align:'right'});
+          }
+
+          // Separator
+          doc.setStrokeColor(200,200,200);
+          doc.setLineWidth(0.2);
+          doc.line(mx,y+rowH+0.3,pw-mx,y+rowH+0.3);
+
+          y+=rowH+1;
+        }
+
+        doc.save('SELECT_Rede_Credenciada.pdf');
+
+      }catch(e){
+        alert('Erro ao gerar PDF: '+e.message);
+        console.error(e);
+      }
+
+      var btn2=document.getElementById('pdfBtn');
+      btn2.innerHTML='<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M12 16l-6-6h4V4h4v6h4l-6 6z"/><path d="M20 18H4v2h16v-2z"/></svg> Download em PDF';
+      btn2.disabled=false;
+    },100);
+
+  }catch(e){
+    alert('Erro: '+e.message);
+    console.error(e);
+  }
 }
 </script>
 </body>
