@@ -1,1001 +1,700 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rede Credenciada - Select Saúde PE</title>
-
-    <!-- Define a cor da barra do navegador e o tema visual principal do PWA -->
-    <meta name="theme-color" content="#794ef4">
-
-	<!-- Faz a página reconhecer o arquivo manifest.json, necessário para funcionar como PWA -->
-	<link rel="manifest" href="/manifest.json">
-
-    <!-- Define os ícones usados como favicon e como atalho quando o site é instalado -->
-	<link rel="icon" type="image/png" sizes="192x192" href="/img/logo_select_operadora_192px.png">
-	<link rel="apple-touch-icon" href="/img/logo_select_operadora_512px.png">
-
-    <!-- Estilos base do DataTables e do layout responsivo da tabela -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
-    <style>
-		*,
-		*::before,
-		*::after {
-			box-sizing: border-box;
-		}
-
-        /* Variáveis e estilos gerais da interface (cores, textos, fundo e contêineres principais) */
-        :root {
-            --bg-color: #f4f4f9;
-            --text-color: #434343;
-            --container-bg: white;
-            --primary-color: #794ef0;
-            --header-text: white;
-            --filter-bg: #e2d6ff;
-            --row-even: #f0ebff;
-            --row-hover: #e2d6ff;
-            --border-color: #e0e0e0;
-        }
-
-        /* Versão das mesmas variáveis quando o modo escuro está ativo no body */
-        body.dark-mode {
-            --bg-color: #121212;
-            --text-color: #e0e0e0;
-            --container-bg: #1e1e1e;
-            --primary-color: #5b3bb4;
-            --header-text: #e0e0e0;
-            --filter-bg: #2c2c2c;
-            --row-even: #252525;
-            --row-hover: #333333;
-            --border-color: #333;
-        }
-
-        html, body {
-            height: 100%;
-        }
-
-        body {
-            font-family: 'Roboto', Arial, sans-serif;
-            margin: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-size: 11pt;
-            transition: background-color 0.3s, color 0.3s;
-            overflow: hidden;              /* Impede o scroll geral no desktop; controle fica na área da tabela */
-            box-sizing: border-box;
-            padding: 10px 30px;            /* Margens laterais do conteúdo principal */
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Contêiner principal que organiza cabeçalho e tabela em layout flexível vertical */
-        .page {
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        /* Área do cabeçalho que permanece visualmente fixa no topo da página */
-        .fixed-top-container {
-            flex-shrink: 0;
-            background-color: var(--bg-color);
-        }
-        
-        .header-content {
-            background: var(--container-bg);
-            padding: 10px; 
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: background-color 0.3s;
-        }
-
-        .top-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center; 
-            margin-bottom: 5px; 
-            flex-wrap: wrap; 
-            gap: 10px;
-        }
-
-        h1 {
-            color: #5b3bb4;
-            text-align: center;
-            margin-bottom: 5px;
-            margin-top: 5px;
-        }
-        
-        body.dark-mode h1 {
-            color: #9c7dff;
-        }
-
-		/* Estilo do botão flutuante de modo escuro quando a página está em tela maior (desktop) */
-		.theme-toggle {
-			position: fixed;
-			bottom: 200px;
-			right: 100px;
-			z-index: 2000;
-
-			background: var(--container-bg);
-			border: 2px solid #794ef0;
-			color: #794ef0;
-			padding: 0;
-			border-radius: 50px;
-			cursor: pointer;
-
-			display: flex;
-			align-items: center;
-			width: 50px;
-			height: 50px;
-			overflow: hidden;
-			transition: width 0.3s ease, background-color 0.3s ease;
-			white-space: nowrap;
-			box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-
-			outline: none !important;
-		}
-
-		.theme-toggle:focus,
-		.theme-toggle:active {
-			outline: none !important;
-			border-color: var(--primary-color) !important;
-			
-		}
-		.theme-toggle .icon {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 50px;
-			height: 50px;
-			flex-shrink: 0;
-			font-size: 1.5rem;
-			margin-top: -3px;
-			margin-left: -1px;
-		}
-
-		.theme-toggle .text {
-			opacity: 0;
-			transition: opacity 0.3s ease;
-			font-size: 0.9em;
-			padding-right: 15px;
-		}
-
-		.fixed-top-container.hidden-header {
-			max-height: 0;
-			opacity: 0;
-			overflow: hidden;
-			transition: max-height 0.3s ease, opacity 0.3s ease;
-		}
-
-		.theme-toggle.hidden-header {
-			opacity: 0;
-			pointer-events: none;
-			transform: translateX(-40px);
-			transition: opacity 0.3s ease, transform 0.3s ease;
-		}
-
-		.theme-toggle:hover .text {
-			opacity: 1;
-		}
-
-		body.dark-mode .theme-toggle {
-			border-color: #ebb432;
-			color: #ebb432;
-		}
-
-        /* Caixa de aviso legal informando que o site é projeto pessoal e não canal oficial */
-        .disclaimer-box {
-            background-color: #fff8e1; 
-            color: #8d6e63; 
-            border: 1px solid #ffe0b2;
-            padding: 5px; 
-            border-radius: 6px;
-            text-align: center;
-            font-size: 0.9em;
-            margin-bottom: 5px; 
-            transition: all 0.3s ease;
-            opacity: 1;
-            max-height: 100px; 
-            overflow: hidden;
-        }
-        
-        body.dark-mode .disclaimer-box {
-            background-color: #3e2723;
-            color: #ffccbc;
-            border-color: #4e342e;
-        }
-
-        .disclaimer-box a {
-            color: inherit;
-            text-decoration: underline;
-            font-weight: bold;
-        }
-
-		/* Seção da tabela, que é a única parte rolável no layout desktop */
-		.table-section {
-			flex: 1;
-			min-height: 0;
-			display: flex;
-			width: 100%;
-			max-width: 100%;
-		}
-
-		.table-container {
-			background: var(--container-bg);
-			padding: 20px;
-			box-shadow: 0 0 15px rgba(0,0,0,0.1);
-			border-radius: 8px;
-			margin: 0;
-			transition: background-color 0.3s;
-			flex: 1;
-			min-height: 0;
-			display: flex;
-			flex-direction: column;
-			width: 100%;
-			max-width: 100%;
-		}
-
-        #loading {
-            text-align: center;
-            padding: 20px;
-            font-size: 1.1em;
-            color: var(--text-color);
-            flex-shrink: 0;
-        }
-
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border-left-color: var(--primary-color);
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-		.table-wrapper {
-			flex: 1;
-			min-height: 0;
-			width: 100%;
-			max-width: 100%;
-			overflow-y: auto;
-			overflow-x: auto;
-			-webkit-overflow-scrolling: touch;
-			position: relative;
-		}
-
-        .table-wrapper::-webkit-scrollbar {
-            height: 8px;
-            width: 8px;
-        }
-        .table-wrapper::-webkit-scrollbar-track {
-            background: #ece7ff;
-            border-radius: 4px;
-        }
-        .table-wrapper::-webkit-scrollbar-thumb {
-            background: #b39ddb;
-            border-radius: 4px;
-        }
-        .table-wrapper:hover::-webkit-scrollbar-thumb {
-            background: #8e6ce0;
-        }
-
-        body.dark-mode .table-wrapper::-webkit-scrollbar-track {
-            background: #2c2c2c;
-        }
-        body.dark-mode .table-wrapper::-webkit-scrollbar-thumb {
-            background: #5b3bb4;
-        }
-
-        .table-wrapper {
-            scrollbar-width: thin;
-            scrollbar-color: #b39ddb #ece7ff;
-        }
-        body.dark-mode .table-wrapper {
-            scrollbar-color: #5b3bb4 #2c2c2c;
-        }
-
-		table.dataTable {
-			border-collapse: collapse;
-			border: 1px solid #5b3bb4;
-			width: max-content !important;
-			min-width: 100%;
-		}
-
-        table.dataTable thead tr:first-child th {
-            background-color: var(--primary-color);
-            color: var(--header-text);
-            border: 1px solid #5b3bb4;
-            font-weight: 700;
-            padding: 12px 8px;
-            text-align: center;
-        }
-
-        table.dataTable thead tr:nth-child(2) th {
-            padding: 6px;
-            background-color: var(--filter-bg);
-            border: 1px solid #ccc;
-        }
-
-        body.dark-mode table.dataTable thead tr:nth-child(2) th {
-            border-color: #444;
-        }
-
-        table.dataTable thead select {
-            width: 100%;
-            padding: 5px;
-            border: 1px solid #bbb;
-            border-radius: 4px;
-            background-color: var(--container-bg);
-            font-size: 0.9em;
-            color: var(--text-color);
-            cursor: pointer;
-        }
-
-        table.dataTable tbody td {
-            border: 1px solid var(--border-color);
-            padding: 8px 10px;
-            vertical-align: middle;
-            font-size: 0.95em;
-            color: var(--text-color);
-        }
-
-        table.dataTable tbody tr:nth-child(even) { background-color: var(--row-even); }
-        table.dataTable tbody tr:nth-child(odd) { background-color: var(--container-bg); }
-        table.dataTable tbody tr:hover { background-color: var(--row-hover) !important; }
-
-        /* Ajuste responsivo do tamanho da logo da Select Saúde */
-        .logo-img {
-            max-height: 60px; 
-            width: auto;
-            transition: max-height 0.3s ease; 
-        }
-
-        @media (min-width: 768px) {
-            .logo-img {
-                max-height: 150px; 
-            }
-        }
-
-		/* Estilos do campo de pesquisa global transformado em botão flutuante no desktop */
-		#tabelaCredenciados_filter {
-			position: fixed;
-			bottom: 140px;
-			right: 100px;
-			z-index: 2500;
-
-			width: 50px;
-			height: 50px;
-			padding: 0 10px;
-
-			display: flex !important;
-			align-items: center;
-			justify-content: center;
-
-			background-color: var(--container-bg);
-			border: 2px solid #794ef0;
-			border-radius: 999px;
-			box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-			box-sizing: border-box;
-			overflow: hidden;
-			cursor: text;
-
-			transition: width 0.25s ease, box-shadow 0.25s ease;
-		}
-
-        #tabelaCredenciados_filter label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin: 0;
-            width: 100%;
-            font-size: 0;   /* Esconde o texto padrão “Pesquisar:” do DataTables */
-        }
-
-        #tabelaCredenciados_filter label::before {
-            content: "";
-            display: inline-block;
-            width: 22px;
-            height: 22px;
-            flex-shrink: 0;
-            margin-right: 2px;
-
-            background-image: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
-<circle cx='11' cy='11' r='7' stroke='%23794ef0' stroke-width='2' fill='none'/>\
-<line x1='16' y1='16' x2='21' y2='21' stroke='%23794ef0' stroke-width='2' stroke-linecap='round'/>\
-</svg>");
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
-        }
-
-        #tabelaCredenciados_filter label > span {
-            display: none !important;
-        }
-
-        #tabelaCredenciados_filter input {
-            border: 0;
-            outline: none;
-            background: transparent;
-
-            width: 0;
-            opacity: 0;
-            padding: 0;
-
-            font-size: 14px;
-            color: var(--text-color);
-
-            transition: width 0.25s ease, opacity 0.25s ease, padding 0.25s ease;
-        }
-
-        #tabelaCredenciados_filter.expanded {
-            width: min(260px, 80vw);
-            justify-content: flex-start;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-        }
-
-        #tabelaCredenciados_filter.expanded input {
-            width: 100%;
-            opacity: 1;
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: 1px solid #794ef0;
-            background-color: var(--container-bg);
-        }
-
-        #tabelaCredenciados_filter.expanded input:focus {
-            border-color: #5b3bb4;
-            box-shadow: 0 0 4px rgba(121,78,240,0.5);
-        }
-
-        body.dark-mode #tabelaCredenciados_filter {
-            border-color: #9c7dff;
-            background-color: var(--container-bg);
-        }
-
-        body.dark-mode #tabelaCredenciados_filter label::before {
-            background-image: url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
-<circle cx='11' cy='11' r='7' stroke='%239c7dff' stroke-width='2' fill='none'/>\
-<line x1='16' y1='16' x2='21' y2='21' stroke='%239c7dff' stroke-width='2' stroke-linecap='round'/>\
-</svg>");
-        }
-
-        body.dark-mode #tabelaCredenciados_filter.expanded input {
-            background-color: #1e1e1e;
-            color: #e0e0e0;
-            border-color: #9c7dff;
-        }
-
-		/* Ajustes gerais de layout para telas pequenas (celular ou janelas muito baixas) */
-		@media (max-width: 768px), (max-height: 500px) {
-
-			html,
-			body {
-				height: auto;
-				min-height: 100dvh;
-				overflow-x: hidden;
-				overflow-y: auto;
-			}
-
-			body {
-				padding: 8px;
-				display: block;
-			}
-
-			.page {
-				display: block;
-				height: auto;
-				min-height: auto;
-			}
-
-			.table-section,
-			.table-container {
-				width: 100%;
-				max-width: 100%;
-				margin-bottom: 0;
-				display: block;
-				flex: none;
-				min-height: auto;
-			}
-
-			.table-wrapper {
-				width: 100%;
-				max-width: 100%;
-				flex: none;
-				min-height: auto;
-				max-height: none;
-				overflow-x: auto;
-				overflow-y: visible;
-				position: relative;
-			}
-
-			.top-header {
-				flex-wrap: wrap;
-				justify-content: center;
-				align-items: center;
-				row-gap: 2px;
-				column-gap: 5px;
-				text-align: center;
-			}
-
-			.top-header img:not(.logo-img) {
-				transform: scale(0.8);
-				transform-origin: center center;
-			}
-
-			.top-header .logo-img {
-				max-height: 70px;
-			}
-
-			.top-header h1 {
-				order: 3;
-				width: 100%;
-				font-size: 110%;
-				margin-top: 4px;
-				margin-bottom: 0;
-				line-height: 1.2em;
-			}
-
-			#lastUpdatedDate {
-				font-size: 0.8em;
-				display: block;
-				margin-top: 2px;
-			}
-
-			.disclaimer-box {
-				font-size: 0.75em;
-				padding: 4px;
-				margin-bottom: 4px;
-			}
-
-			.top-header > div:first-child {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				text-align: center;
-				width: 100%;
-			}
-
-			.theme-toggle .text {
-				display: none;
-			}
-		}
-
-		/* Ajuste específico para mobile em modo retrato: posiciona botões no canto inferior direito */
-		@media (max-width: 768px) and (orientation: portrait) {
-
-			/* Reposiciona o botão de modo escuro em telas pequenas (retrato) */
-			.theme-toggle {
-				position: fixed;
-				bottom: 120px;
-				right: 50px;
-				top: auto;
-				left: auto;
-			}
-
-			/* Reposiciona o botão/campo flutuante de pesquisa na versão mobile em retrato */
-			#tabelaCredenciados_filter {
-				position: fixed;
-				bottom: 50px;
-				right: 50px;
-				top: auto;
-				left: auto;
-			}
-		}
-
-		/* Ajuste específico para mobile em modo paisagem: mantém botões acessíveis na tela */
-		@media (max-height: 500px) and (orientation: landscape) {
-
-			/* Reposiciona o botão de modo escuro para telas baixas em modo paisagem */
-			.theme-toggle {
-				position: fixed;
-				bottom: 120px;
-				right: 100px;
-				top: auto;
-				left: auto;
-			}
-
-			/* Reposiciona o campo/botão de pesquisa para telas baixas em modo paisagem */
-			#tabelaCredenciados_filter {
-				position: fixed;
-				bottom: 50px;
-				right: 100px;
-				top: auto;
-				left: auto;
-			}
-		}
-		.center-header {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			gap: 4px; /* espaço pequeno entre título e botão */
-		}
-		.download-wrapper {
-			text-align: right;      /* botão fica discreto no canto superior direito da tabela */
-			margin-bottom: 4px;
-		}
-
-		.download-btn {
-			display: inline-flex;
-			align-items: center;
-			gap: 4px;
-
-			padding: 0;
-			margin: 0;
-
-			font-size: 0.55rem;
-			font-weight: 400;
-
-			background: transparent;
-			color: #888;            /* cinza clarinho */
-			border: none;
-
-			opacity: 0.7;
-			text-decoration: none;
-			white-space: nowrap;
-			cursor: pointer;
-		}
-
-		.download-btn:hover {
-			opacity: 1;
-			color: #5b3bb4;         /* só destaca na interação */
-			text-decoration: underline;
-		}
-
-		.download-icon {
-			width: 11px;
-			height: 11px;
-			display: inline-block;
-			opacity: 0.7;
-		}
-
-		body.dark-mode .download-btn {
-			color: #bdbdbd;
-		}
-
-		body.dark-mode .download-btn:hover {
-			color: #9c7dff;
-		}
-
-		body.dark-mode .download-icon {
-			opacity: 0.8;
-		}
-
-	</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#7c3aed">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Select Rede">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="description" content="Rede Credenciada Select Saúde — Pernambuco. Encontre hospitais, clínicas, laboratórios e centros de imagem.">
+<title>Select Saúde — Rede Credenciada</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEycHQiIGhlaWdodD0iNTEycHQiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSIjNzk0ZWYzZmYiPgo8cGF0aCBmaWxsPSIjNzk0ZWYzIiBvcGFjaXR5PSIxLjAwIiBkPSIgTSAxMDMuNDIgNDAuNTEgQyAxMjguMTQgMjkuNDEgMTU2LjI1IDI2LjUwIDE4Mi44MiAzMS41OCBDIDIwOS4yMCAzNi41NSAyMzMuOTAgNDguNDcgMjU1LjYyIDY0LjA0IEMgMjc3LjY0IDQ3LjE3IDMwMy4zNSAzNC41NCAzMzAuOTMgMzAuMzQgQyAzNDEuODUgMjguMzEgMzUyLjk5IDI4Ljk2IDM2NC4wMiAyOC45OSBDIDM5NC40MCAzMC45OSA0MjMuNzEgNDMuNTEgNDQ3LjAzIDYyLjkyIEMgNDcwLjg5IDgyLjU4IDQ4OC4yNCAxMDkuOTkgNDk1LjYzIDE0MC4wMiBDIDUwNi4yNCAxODEuOTUgNDk3LjIyIDIyOC4wNiA0NzIuMzIgMjYzLjMzIEMgNDYyLjY5IDI3Ny43NCA0NDkuNjQgMjg5LjI3IDQzNy42NiAzMDEuNjIgQyA0MzMuMzYgMzA1Ljg0IDQyOS4yMCAzMTAuMTkgNDI0LjkxIDMxNC40MSBDIDQxMC44MiAzMDAuNTEgMzk2Ljc1IDI4Ni42MCAzODIuNjcgMjcyLjcwIEMgMzkzLjY3IDI2MS43MSA0MDQuNzIgMjUwLjc5IDQxNS43MCAyMzkuNzkgQyA0MzEuMjYgMjIzLjk5IDQ0MC40MyAyMDIuMTYgNDQwLjkxIDE4MC4wMCBDIDQ0MS41NSAxNTguODQgNDM0LjMyIDEzNy41NCA0MjAuODQgMTIxLjIxIEMgNDA4LjQ5IDEwNi4wNSAzOTEuMDAgOTUuMjAgMzcxLjk1IDkwLjg0IEMgMzQ4Ljk4IDg1LjQwIDMyMy45MyA4OS40MCAzMDMuODggMTAxLjg4IEMgMjk2LjEwIDEwNi41NCAyODkuNDUgMTEyLjc3IDI4My4xMyAxMTkuMjIgQyAyNzQuMDMgMTI4LjMyIDI2NC44OSAxMzcuMzggMjU1Ljc3IDE0Ni40NiBDIDI0NC43MCAxMzUuNDcgMjMzLjY4IDEyNC40MyAyMjIuNTcgMTEzLjQ4IEMgMjA3LjI3IDk4LjYyIDE4Ni4zNCA4OS43NCAxNjUuMDEgODkuMTggQyAxNDIuNjIgODguMzggMTIwLjE0IDk2LjUzIDEwMy4yMiAxMTEuMTggQyA4OS4wMyAxMjMuMjUgNzguNzYgMTM5LjgzIDc0LjM5IDE1Ny45NSBDIDY2Ljg5IDE4Ny4zMSA3NS43NyAyMjAuMjkgOTcuNTIgMjQxLjUwIEMgMTMxLjYzIDI3NC43MiAxNjUuNzYgMzA3LjkyIDE5OS44OCAzNDEuMTIgQyAxODUuNzkgMzU1LjQxIDE3MS42NiAzNjkuNjYgMTU3LjQ4IDM4My44NyBDIDEyNS45NyAzNTIuNTkgOTQuNTQgMzIxLjIzIDYzLjA0IDI4OS45NCBDIDU1Ljc1IDI4Mi41NSA0OC4wMyAyNzUuNTIgNDEuNzIgMjY3LjI0IEMgNi44MyAyMjIuNjYgMi4wMyAxNTYuNzEgMzAuNzcgMTA3LjgzIEMgNDcuNzAgNzguOTkgNzIuNTggNTQuMTEgMTAzLjQyIDQwLjUxIFoiIC8+CjwvZz4KPGcgaWQ9IiMwMGNiZmZmZiI+CjxwYXRoIGZpbGw9IiMwMGNiZmYiIG9wYWNpdHk9IjEuMDAiIGQ9IiBNIDI1NS4yMCAzOTYuODggQyAyOTIuNTAgMzYwLjI2IDMyOS43NCAzMjMuNTggMzY3LjAxIDI4Ni45MyBDIDM4MS4yNSAzMDEuMjcgMzk1LjQ5IDMxNS42MSA0MDkuNzEgMzI5Ljk3IEMgMzU5LjYwIDM3OS43OSAzMDkuNTEgNDI5LjYzIDI1OS4zOSA0NzkuNDUgQyAyNTguMDUgNDgwLjg2IDI1Ni42NyA0ODIuMjYgMjU1LjAzIDQ4My4zMyBDIDIyOC4wNiA0NTUuNTMgMjAwLjgxIDQyOC4wMiAxNzMuNzcgNDAwLjI5IEMgMTg4LjA2IDM4NS44OSAyMDIuMjcgMzcxLjQyIDIxNi41NyAzNTcuMDMgQyAyMjkuNDUgMzcwLjMxIDI0Mi4zMiAzODMuNTkgMjU1LjIwIDM5Ni44OCBaIiAvPgo8L2c+Cjwvc3ZnPg==">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=Space+Grotesk:wght@500;700&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#0a0a12;
+  --surface:#111120;
+  --surface2:#1a1a2e;
+  --purple:#7c3aed;
+  --purple-light:#a78bfa;
+  --cyan:#22d3ee;
+  --cyan-dark:#06b6d4;
+  --text:#e2e8f0;
+  --text-dim:#94a3b8;
+  --green:#22c55e;
+  --red:#ef4444;
+  --header-bg:rgba(10,10,18,0.85);
+  --header-border:rgba(124,58,237,0.15);
+  --card-border:rgba(124,58,237,0.08);
+  --card-hover-border:rgba(124,58,237,0.3);
+  --input-border:rgba(124,58,237,0.2);
+  --input-bg:var(--surface2);
+  --svc-sim-bg:rgba(34,197,94,0.12);
+  --svc-nao-bg:rgba(239,68,68,0.08);
+  --svc-nao-color:rgba(239,68,68,0.4);
+  --svc-dash-bg:rgba(148,163,184,0.05);
+  --svc-dash-color:rgba(148,163,184,0.2);
+  --footer-border:rgba(124,58,237,0.1);
+  --banner-bg:rgba(234,179,8,0.08);
+  --banner-border:rgba(234,179,8,0.25);
+  --banner-text:#eab308;
+  --badge-bg:rgba(124,58,237,0.12);
+  --badge-text:var(--purple-light);
+  --radius:12px;
+}
+
+[data-theme="light"]{
+  --bg:#f4f4f8;
+  --surface:#ffffff;
+  --surface2:#eeeef4;
+  --text:#1a1a2e;
+  --text-dim:#555568;
+  --header-bg:rgba(244,244,248,0.92);
+  --header-border:rgba(124,58,237,0.12);
+  --card-border:rgba(124,58,237,0.1);
+  --card-hover-border:rgba(124,58,237,0.35);
+  --input-border:rgba(124,58,237,0.18);
+  --input-bg:#e8e8f0;
+  --svc-sim-bg:rgba(34,197,94,0.1);
+  --svc-nao-bg:rgba(239,68,68,0.06);
+  --svc-nao-color:rgba(239,68,68,0.5);
+  --svc-dash-bg:rgba(148,163,184,0.08);
+  --svc-dash-color:rgba(148,163,184,0.3);
+  --footer-border:rgba(124,58,237,0.08);
+  --banner-bg:rgba(234,179,8,0.06);
+  --banner-border:rgba(234,179,8,0.2);
+  --banner-text:#a16207;
+  --badge-bg:rgba(124,58,237,0.08);
+  --badge-text:#7c3aed;
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  transition:background .3s,color .3s;
+}
+
+/* LEGAL BANNER */
+.legal-banner{
+  background:var(--banner-bg);
+  border-bottom:1px solid var(--banner-border);
+  padding:8px 20px;
+  text-align:center;
+  font-size:12px;
+  line-height:1.5;
+  color:var(--banner-text);
+  transition:background .3s,color .3s;
+}
+.legal-banner strong{font-weight:700}
+.legal-banner a{
+  color:inherit;
+  text-decoration:underline;
+  font-weight:inherit;
+}
+.legal-banner a:hover{
+  opacity:0.8;
+  cursor:pointer;
+}
+
+/* HEADER */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:var(--header-bg);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--header-border);
+  padding:10px 20px;
+  transition:background .3s;
+}
+.header-inner{
+  max-width:1200px;margin:auto;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.logo-area{display:flex;align-items:center;gap:8px}
+.logo-area img{height:32px;border-radius:6px}
+
+/* GITHUB BADGE */
+.gh-badge{
+  display:flex;align-items:center;
+  background:var(--badge-bg);
+  border-radius:20px;
+  overflow:hidden;
+  height:32px;
+  max-width:32px;
+  transition:max-width .4s cubic-bezier(.4,0,.2,1),background .3s;
+  white-space:nowrap;
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.gh-badge.expanded{
+  max-width:260px;
+  background:var(--card-hover-border);
+}
+.gh-badge .gh-icon{
+  flex-shrink:0;
+  width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+}
+.gh-badge svg{
+  width:20px;height:20px;
+}
+.gh-badge svg path{fill:var(--badge-text);transition:fill .3s}
+.gh-badge.expanded svg path{fill:#fff}
+.gh-badge-text{
+  font-size:11px;font-weight:600;
+  color:var(--badge-text);
+  padding-right:12px;
+  opacity:0;
+  transition:opacity .3s .1s,color .3s;
+  cursor:pointer;
+}
+.gh-badge.expanded .gh-badge-text{
+  opacity:1;color:#fff;
+}
+
+.header-right{display:flex;align-items:center;gap:14px}
+.stats{
+  display:flex;gap:14px;
+  font-size:13px;color:var(--text-dim);
+}
+.stats span{font-weight:700;color:var(--cyan)}
+
+.theme-toggle{
+  background:var(--surface2);
+  border:1px solid var(--input-border);
+  border-radius:50%;
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:17px;
+  transition:background .3s,border-color .3s,transform .2s;
+  flex-shrink:0;
+}
+.theme-toggle:hover{transform:scale(1.1);border-color:var(--cyan)}
+.theme-toggle .icon-moon,.theme-toggle .icon-sun{display:none}
+[data-theme="light"] .theme-toggle .icon-moon{display:block}
+[data-theme="dark"] .theme-toggle .icon-sun{display:block}
+
+/* HERO */
+.hero{
+  max-width:1200px;margin:0 auto;
+  padding:24px 20px 12px;
+  text-align:center;
+  display:flex;flex-direction:column;align-items:center;
+  gap:0;
+}
+.hero-title,.hero-subtitle{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(1.3rem,3.8vw,1.9rem);
+  font-weight:700;
+  background:linear-gradient(135deg,var(--purple-light),var(--cyan));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1.15;
+}
+.hero-logo{
+  width:clamp(200px,48vw,300px);
+  display:block;
+  margin:6px 0;
+}
+.hero-desc{color:var(--text-dim);font-size:14px;margin-top:12px}
+
+/* FILTERS */
+.filters{
+  max-width:1200px;margin:0 auto;
+  padding:16px 20px;
+  display:flex;flex-wrap:wrap;gap:10px;
+}
+.filter-group{flex:1;min-width:200px}
+.filter-group label{
+  display:block;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;
+  color:var(--text-dim);margin-bottom:4px;
+}
+.filter-group select,.filter-group input{
+  width:100%;padding:10px 14px;
+  background:var(--input-bg);
+  border:1px solid var(--input-border);
+  border-radius:var(--radius);
+  color:var(--text);font-size:14px;
+  font-family:inherit;
+  outline:none;transition:border-color .2s,background .3s,color .3s;
+}
+.filter-group select:focus,.filter-group input:focus{border-color:var(--cyan)}
+.filter-group select option{background:var(--input-bg);color:var(--text)}
+
+/* PDF DOWNLOAD */
+.download-bar{
+  max-width:1200px;margin:0 auto;
+  padding:0 20px 12px;
+  display:flex;justify-content:flex-end;
+}
+.download-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(124,58,237,0.1);
+  color:var(--purple);
+  border:1.5px solid rgba(124,58,237,0.25);
+  border-radius:var(--radius);
+  padding:10px 18px;
+  font-family:inherit;font-size:13px;font-weight:600;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .2s,color .2s,border-color .2s,transform .15s;
+}
+.download-btn:hover{
+  background:var(--purple);
+  color:#fff;
+  border-color:var(--purple);
+  transform:translateY(-1px);
+}
+.download-btn svg{
+  width:16px;height:16px;
+  fill:currentColor;
+}
+
+.results{max-width:1200px;margin:0 auto;padding:0 20px 40px}
+.results-count{font-size:13px;color:var(--text-dim);padding:8px 0 16px}
+.results-count span{color:var(--cyan);font-weight:700}
+
+.cards{display:flex;flex-direction:column;gap:8px}
+.card{
+  background:var(--surface);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:4px 16px;
+  transition:border-color .2s,transform .15s,background .3s;
+}
+.card:hover{border-color:var(--card-hover-border);transform:translateY(-1px)}
+.card-left{min-width:0}
+.card-right{
+  display:flex;flex-direction:column;
+  align-items:flex-end;justify-content:center;gap:6px;
+}
+
+.badge{
+  display:inline-block;padding:2px 10px;border-radius:20px;
+  font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.5px;white-space:nowrap;
+}
+.badge-Hospital{background:rgba(124,58,237,0.15);color:#a78bfa}
+.badge-Imagem{background:rgba(59,130,246,0.15);color:#60a5fa}
+.badge-Laboratório{background:rgba(34,197,94,0.15);color:#4ade80}
+.badge-Clínica{background:rgba(168,85,247,0.15);color:#c084fc}
+
+.prestador{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(14px,2.5vw,17px);font-weight:700;
+  color:var(--text);line-height:1.3;margin:4px 0 2px;transition:color .3s;
+}
+.cidade{font-size:13px;font-weight:500;color:var(--cyan-dark)}
+.produto{font-size:12px;color:var(--text-dim);font-style:italic}
+.obs-text{font-size:11px;color:var(--red);font-style:italic;margin-top:2px}
+
+.services{display:flex;flex-wrap:wrap;gap:3px;justify-content:flex-end}
+.svc{
+  width:28px;height:22px;display:flex;align-items:center;justify-content:center;
+  border-radius:4px;font-size:10px;font-weight:700;position:relative;transition:background .3s;
+}
+.svc[data-tip]::after{
+  content:attr(data-tip);position:absolute;bottom:100%;left:50%;
+  transform:translateX(-50%);background:var(--surface2);color:var(--text);
+  padding:3px 8px;border-radius:4px;font-size:10px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity .15s;z-index:10;
+}
+.svc:hover[data-tip]::after{opacity:1}
+.svc-sim{background:var(--svc-sim-bg);color:var(--green)}
+.svc-nao{background:var(--svc-nao-bg);color:var(--svc-nao-color)}
+.svc-dash{background:var(--svc-dash-bg);color:var(--svc-dash-color)}
+
+.footer{
+  text-align:center;padding:24px 20px;font-size:12px;
+  color:var(--text-dim);border-top:1px solid var(--footer-border);transition:border-color .3s;
+}
+
+@media(max-width:600px){
+  .card{grid-template-columns:1fr;gap:8px}
+  .card-right{align-items:flex-start;flex-direction:row;flex-wrap:wrap}
+  .services{justify-content:flex-start}
+  .filters{flex-direction:column}
+  .stats{gap:8px;font-size:11px}
+  .legal-banner{font-size:11px;padding:6px 14px}
+}
+
+.card{opacity:0;animation:fadeUp .35s ease forwards}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+</style>
 </head>
-<body>
+<body data-theme="light">
 
-    <!-- Botão flutuante que permite alternar entre modo claro e modo escuro -->
-    <button class="theme-toggle" id="themeToggle" title="Alternar tema">
-        <span class="icon">🌙</span>
-        <span class="text">Modo Escuro</span>
-    </button>
+<div class="legal-banner">
+  ⚠️ <strong>AVISO LEGAL:</strong> Este site 
+  <strong>NÃO É UM CANAL OFICIAL</strong> da 
+  <strong>
+    <a href="https://selectoperadora.com.br/"
+       target="_blank"
+       rel="noopener noreferrer">
+       Select Saúde
+    </a>
+  </strong>. 
+  Trata-se de um projeto pessoal de programação (amador) para fins de estudo. 
+  As informações podem conter erros. Confirme sempre com a operadora.
+</div>
 
-    <div class="page">
-        <!-- Cabeçalho com aviso legal, título, autor e logo, fixo no topo da interface -->
-        <div class="fixed-top-container">
-            <div class="header-content"> 
-                <div class="disclaimer-box" id="disclaimerBox">
-                    ⚠️ <strong>AVISO LEGAL:</strong> Este site <strong>NÃO É UM CANAL OFICIAL</strong> da <a href="https://selectoperadora.com.br/" target="_blank">Select Saúde</a>. 
-                    <br>
-                    Trata-se de um projeto pessoal de programação (amador) para fins de estudo. 
-                    As informações podem conter erros. Confirme sempre com a operadora.
-                </div>
-                
-                <div class="top-header">
-                    <!-- Lado esquerdo do cabeçalho: badge de Vibe Coding e autoria -->
-                    <div style="text-align: left;">
-                        <a href="https://github.com/allanlauzid" target="_blank" style="text-decoration: none;">
-                            <img height="30" src="https://img.shields.io/badge/Built%20with-Vibe%20Coding-794ef0?style=for-the-badge&logo=google&logoColor=white" alt="Built with Vibe Coding">
-                        </a>
-                        <div style="font-size: 0.85em; margin-top: 4px; font-weight: 500;">
-                            by <a href="https://github.com/allanlauzid" target="_blank" style="text-decoration: none; color: #5b3bb4;">Allan Lauzid</a>
-                        </div>
-                    </div>
-                    
-					<div class="center-header">
-						<h1 style="margin-bottom: 5px; margin-top: 5px;">
-							Rede Credenciada - Select Saúde PE
-							<br> 
-							<span id="lastUpdatedDate" style="color: #e74c3c; font-size: 0.6em; font-weight: normal;">
-								Atualizada em 30/09/2025
-							</span>
-						</h1>
-					</div>
-                    <!-- Lado direito do cabeçalho: logo da Select Saúde com link para o site oficial -->
-                    <div>
-                        <a href="https://selectoperadora.com.br/" target="_blank">
-                            <img height="100" src="img/logo_SelectSaude.png" alt="Logo Select Saúde" class="logo-img">
-                        </a>
-                    </div>
-                </div>
-            </div>
+<div class="header">
+  <div class="header-inner">
+    <div class="logo-area">
+      <svg width="32" height="32" style="border-radius:6px" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="#794ef3ff"><path fill="#794ef3" opacity="1.00" d=" M 103.42 40.51 C 128.14 29.41 156.25 26.50 182.82 31.58 C 209.20 36.55 233.90 48.47 255.62 64.04 C 277.64 47.17 303.35 34.54 330.93 30.34 C 341.85 28.31 352.99 28.96 364.02 28.99 C 394.40 30.99 423.71 43.51 447.03 62.92 C 470.89 82.58 488.24 109.99 495.63 140.02 C 506.24 181.95 497.22 228.06 472.32 263.33 C 462.69 277.74 449.64 289.27 437.66 301.62 C 433.36 305.84 429.20 310.19 424.91 314.41 C 410.82 300.51 396.75 286.60 382.67 272.70 C 393.67 261.71 404.72 250.79 415.70 239.79 C 431.26 223.99 440.43 202.16 440.91 180.00 C 441.55 158.84 434.32 137.54 420.84 121.21 C 408.49 106.05 391.00 95.20 371.95 90.84 C 348.98 85.40 323.93 89.40 303.88 101.88 C 296.10 106.54 289.45 112.77 283.13 119.22 C 274.03 128.32 264.89 137.38 255.77 146.46 C 244.70 135.47 233.68 124.43 222.57 113.48 C 207.27 98.62 186.34 89.74 165.01 89.18 C 142.62 88.38 120.14 96.53 103.22 111.18 C 89.03 123.25 78.76 139.83 74.39 157.95 C 66.89 187.31 75.77 220.29 97.52 241.50 C 131.63 274.72 165.76 307.92 199.88 341.12 C 185.79 355.41 171.66 369.66 157.48 383.87 C 125.97 352.59 94.54 321.23 63.04 289.94 C 55.75 282.55 48.03 275.52 41.72 267.24 C 6.83 222.66 2.03 156.71 30.77 107.83 C 47.70 78.99 72.58 54.11 103.42 40.51 Z" /></g><g id="#00cbffff"><path fill="#00cbff" opacity="1.00" d=" M 255.20 396.88 C 292.50 360.26 329.74 323.58 367.01 286.93 C 381.25 301.27 395.49 315.61 409.71 329.97 C 359.60 379.79 309.51 429.63 259.39 479.45 C 258.05 480.86 256.67 482.26 255.03 483.33 C 228.06 455.53 200.81 428.02 173.77 400.29 C 188.06 385.89 202.27 371.42 216.57 357.03 C 229.45 370.31 242.32 383.59 255.20 396.88 Z" /></g></svg>
+      <div class="gh-badge" id="ghBadge">
+        <div class="gh-icon" id="ghIcon">
+          <svg viewBox="0 0 24 24"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.11.82-.26.82-.58v-2.16c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 0 0-1.33-1.76c-1.09-.74.08-.73.08-.73a2.52 2.52 0 0 1 1.84 1.24 2.56 2.56 0 0 0 3.5 1 2.56 2.56 0 0 1 .76-1.6c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 0 1 1.24-3.22 4.3 4.3 0 0 1 .12-3.18s1-.32 3.3 1.23a11.38 11.38 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23a4.3 4.3 0 0 1 .12 3.18 4.64 4.64 0 0 1 1.23 3.22c0 4.61-2.81 5.63-5.48 5.92a2.86 2.86 0 0 1 .82 2.22v3.29c0 .32.21.7.82.58A12 12 0 0 0 12 .3"/></svg>
         </div>
-
-        <!-- Área da tabela interativa, única parte da tela que pode rolar no layout desktop -->
-        <div class="table-section">
-            <div class="table-container">
-                <div id="loading">
-                    <span class="spinner"></span>Carregando dados da rede...
-                </div>
-				<div class="download-wrapper">
-					<a href="docs/rede-credenciada-PE-2025-09-30.pdf" download class="download-btn">
-						<img src="img/icon_pdf.png" alt="PDF" class="download-icon">
-						Baixar PDF original
-					</a>
-				</div>
-                <div class="table-wrapper">
-                    <table id="tabelaCredenciados" class="display nowrap" style="width:100%;">
-                        <thead>
-                            <tr>
-                                <th data-priority="1">Tipo</th>
-                                <th data-priority="1">Prestador</th>
-                                <th data-priority="2">Cidade</th>
-                                <th data-priority="3">Produto</th>
-                                <th>PS Adulto</th>
-                                <th>PS Pediatrico</th>
-                                <th>Consultas</th>
-                                <th>Internação</th>
-                                <th>Maternidade</th>
-                                <th>Básica</th>
-                                <th>Premium</th>
-                                <th>Smart</th>
-                                <th>Obs</th>
-                            </tr>
-                            <!-- Segunda linha do cabeçalho, reservada para filtros individuais por coluna -->
-                            <tr>
-                                <th></th><th></th><th></th><th></th><th></th><th></th>
-                                <th></th><th></th><th></th><th></th><th></th><th></th><th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Linhas da tabela serão preenchidas dinamicamente com os dados do CSV -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <span class="gh-badge-text" id="ghText">Built by Allan Lauzid</span>
+      </div>
     </div>
+    <div class="header-right">
+      <div class="stats">
+        <div>Prestadores: <span id="totalCount">265</span></div>
+        <div>Exibindo: <span id="filteredCount">265</span></div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+        <span class="icon-moon">🌙</span>
+        <span class="icon-sun">☀️</span>
+      </button>
+    </div>
+  </div>
+</div>
 
-    <!-- Bibliotecas JavaScript externas necessárias: jQuery, DataTables e PapaParse -->
-    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<div class="hero">
+  <div class="hero-title">Rede Credenciada</div>
+  <svg class="hero-logo"
+   viewBox="0 0 473 121"
+   version="1.1"
+   id="svg33"
+   sodipodi:docname="SVG_logo_SelectSaude.svg"
+   xml:space="preserve"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs33"><rect
+       x="141.33183"
+       y="87.355858"
+       width="790.46399"
+       height="82.384384"
+       id="rect33" /></defs><sodipodi:namedview
+     id="namedview33"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="pt"
+     inkscape:zoom="0.70401691"
+     inkscape:cx="-131.38889"
+     inkscape:cy="101.56006"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg33" /><path
+     fill="#6e4fed"
+     opacity="1"
+     d="M 20.7,4.8 C 31.53,-0.08 44.8,1.76 54.11,9.06 60.65,4.16 68.88,1.4 77.08,2.17 c 8.82,0.65 17.27,5.11 22.74,12.05 8.39,10.24 9.33,25.78 2.42,37.03 -2.96,5.01 -7.51,8.73 -11.5,12.87 C 87.62,61 84.5,57.88 81.38,54.75 85.83,50.07 91.63,45.9 93.1,39.22 95.72,30.12 90.24,19.83 81.45,16.54 74.78,13.82 66.61,15.37 61.45,20.41 58.97,22.82 56.59,25.33 54.1,27.72 49.45,23.43 45.57,17.66 39.11,15.98 29.6,12.95 18.54,18.86 15.58,28.34 c -2.45,6.68 -0.45,14.47 4.44,19.52 7.29,7.36 14.65,14.67 21.98,22 -3.14,3.13 -6.23,6.31 -9.45,9.37 C 25.49,72.02 18.28,64.97 11.19,57.8 4.93,51.59 1.18,42.86 1.46,34 1.35,21.58 9.31,9.67 20.7,4.8 Z"
+     id="path1" /><path
+     fill="#6e4fed"
+     opacity="1"
+     d="m 147.65,11.74 c 7,-6.56 17.04,-8.41 26.33,-8.27 9.25,0.01 19.32,1.62 26.41,8.06 5.19,4.72 7.25,11.87 7.22,18.71 -5.53,0.02 -11.07,0.01 -16.61,0 -0.59,-2.81 -1.14,-5.86 -3.25,-7.98 -3.69,-4.03 -9.55,-4.76 -14.72,-4.8 -4.84,-0.02 -10.4,1.01 -13.42,5.18 -2.91,3.94 -1.24,10.31 3.51,11.94 11.13,4.5 23.66,3.88 34.79,8.43 5.35,2.13 10.15,6.39 11.67,12.1 2.28,8.73 0.96,19.14 -5.91,25.53 -8.17,7.6 -19.92,9.32 -30.66,8.98 -9.56,-0.31 -19.96,-2.52 -26.68,-9.87 -4.53,-4.55 -6.28,-11.03 -6.86,-17.25 5.75,-0.01 11.5,0.04 17.25,-0.03 0.79,3.35 1.78,6.99 4.64,9.2 4.08,3.32 9.6,3.85 14.67,4.03 5.06,-0.1 10.55,-0.77 14.54,-4.17 3.44,-2.95 3.81,-8.55 1.1,-12.1 -1.66,-2.16 -4.23,-3.33 -6.74,-4.18 -11.04,-3.62 -23.19,-3.25 -33.74,-8.46 -4.62,-2.17 -8.27,-6.33 -9.45,-11.34 -1.9,-8.18 -0.37,-17.73 5.91,-23.71 z"
+     id="path2" /><path
+     fill="#6e4fed"
+     opacity="1"
+     d="m 282,4.75 c 5.58,0 11.17,0 16.75,0 0,27.83 0,55.66 0,83.5 -5.58,0 -11.17,0 -16.75,0 0,-27.83 0,-55.67 0,-83.5 z"
+     id="path3" /><path
+     fill="#6e4fed"
+     opacity="1"
+     d="m 438.5,16.25 c 5.58,0 11.16,0 16.75,0 -0.01,3.42 -0.01,6.83 0,10.25 3.66,0 7.33,0 11,0 -0.01,3.58 -0.01,7.16 0,10.75 -3.67,0 -7.34,0 -11,0 0,11.27 0,22.54 -0.01,33.81 0.04,1.96 0.02,4.61 2.11,5.58 3.84,1.68 7.92,-0.24 11.46,-1.77 0.61,3.75 1.27,7.5 1.93,11.24 -7.57,3.27 -16.36,4.91 -24.36,2.24 -4.82,-1.54 -7.86,-6.5 -7.86,-11.44 -0.06,-13.22 0.01,-26.44 -0.02,-39.67 -2.76,0.01 -5.5,0.01 -8.25,0.01 0,-3.59 0,-7.17 0.01,-10.75 2.74,0 5.49,0 8.24,0 0,-3.42 0,-6.83 0,-10.25 z"
+     id="path4" /><path
+     fill="#6e4fed"
+     opacity="1"
+     d="m 232.78,26.84 c 11.22,-3.69 24.92,-1.75 33.27,7.08 6.86,7.4 8.26,18.08 7.89,27.76 -14.28,0.16 -28.57,0.01 -42.84,0.09 0.36,4.22 0.72,8.99 3.93,12.14 6.38,5.65 18.18,4.02 21.71,-4.15 5.51,-0.01 11.03,-0.03 16.55,0.01 -2.03,6.14 -5.98,11.69 -11.59,15.01 -8.45,5.24 -19.19,6.13 -28.64,3.39 -8.37,-2.45 -14.84,-9.66 -17.17,-17.97 -2.35,-8.48 -2.14,-17.67 0.49,-26.07 2.5,-7.83 8.48,-14.68 16.4,-17.29 m 2.82,13.74 c -2.72,2.67 -3.52,6.53 -4.36,10.1 8.43,0.13 16.87,0.09 25.3,0.02 -0.73,-4.24 -1.98,-9.04 -5.94,-11.39 -4.61,-2.57 -11.05,-2.49 -15,1.27 z"
+     id="path5" /><path
+     fill="#6e4fed"
+     opacity="1"
+     d="m 329.49,25.72 c 9.85,-1.81 21.02,0.14 28.33,7.42 7.64,7.29 9.09,18.56 8.69,28.6 -14.29,0.02 -28.59,-0.01 -42.88,0.02 0.55,4.3 0.75,9.33 4.32,12.37 6.4,5.4 17.94,3.7 21.37,-4.38 5.53,0 11.06,-0.01 16.59,0.02 -2.11,6.51 -6.49,12.25 -12.51,15.58 -8.5,4.87 -19.1,5.46 -28.37,2.63 -9.54,-3.04 -16.05,-12.2 -17.48,-21.89 -1.35,-9.7 -0.71,-20.32 4.66,-28.8 3.76,-6.11 10.26,-10.29 17.28,-11.57 m 0.06,13.8 c -3.75,2.47 -4.85,7.11 -5.65,11.24 8.41,-0.02 16.82,0 25.23,-0.01 -0.57,-2.8 -1.05,-5.75 -2.66,-8.18 -3.46,-5.51 -11.68,-6.43 -16.92,-3.05 z"
+     id="path6" /><path
+     fill="#6e4fed"
+     opacity="1"
+     d="m 392.81,25.88 c 9.18,-1.71 19.67,-0.92 27.12,5.26 5.4,4.39 7.92,11.33 8.49,18.1 -5.32,0.02 -10.64,0.01 -15.95,0 -1.13,-3.83 -2.54,-8.35 -6.57,-10.01 -5,-1.97 -11.94,-1.19 -15.03,3.65 -3.13,5.42 -3.71,11.91 -3.3,18.05 0.36,4.49 1.69,9.18 4.94,12.46 3.49,3.55 9.32,4.03 13.71,2 3.69,-1.86 4.98,-6.06 6.3,-9.66 5.31,0.05 10.62,0 15.93,0.04 -0.72,6.48 -3.34,12.95 -8.4,17.24 -8.34,7.41 -20.73,8.18 -31.03,5.11 -9.68,-2.96 -16.42,-12.14 -17.76,-21.97 -1.08,-8.43 -0.91,-17.37 2.59,-25.25 3.37,-7.73 10.69,-13.47 18.96,-15.02 z"
+     id="path7" /><path
+     fill="#50ccea"
+     opacity="1"
+     d="m 54.14,82 c 7.98,-7.99 15.98,-15.98 23.97,-23.97 3.15,3.06 6.24,6.2 9.35,9.3 C 76.42,78.54 65.22,89.59 54.13,100.75 48.21,94.84 42.3,88.92 36.39,83 c 3.12,-3.13 6.24,-6.26 9.37,-9.37 2.79,2.79 5.59,5.58 8.38,8.37 z"
+     id="path8" /><text
+     xml:space="preserve"
+     transform="matrix(0.52864335,0,0,0.52864335,21.92824,50.530244)"
+     id="text33"
+     style="font-size:40px;line-height:1.25;font-family:sans-serif;text-align:center;white-space:pre;shape-inside:url(#rect33);fill:#50ccea;fill-opacity:1"><tspan
+       x="226.3877"
+       y="123.84868"
+       id="tspan2"><tspan
+         style="font-style:italic"
+         id="tspan1">Operadora de Planos de Saúde</tspan></tspan></text></svg>
+  <div class="hero-subtitle">Pernambuco</div>
+  	<span id="lastUpdatedDate" style="color: #e74c3c; font-size: 0.8em; font-weight: normal;">
+		Atualizada em 30/09/2025
+	</span>
+  <p class="hero-desc">Encontre hospitais, clínicas, laboratórios e centros de imagem</p>
+</div>
+
+<div class="filters">
+  <div class="filter-group">
+    <label>Buscar prestador</label>
+    <input type="text" id="searchInput" placeholder="Digite o nome...">
+  </div>
+  <div class="filter-group">
+    <label>Tipo</label>
+    <select id="filterTipo">
+      <option value="">Todos</option>
+      <option value="Clínica">Clínica</option><option value="Hospital">Hospital</option><option value="Imagem">Imagem</option><option value="Laboratório">Laboratório</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Cidade</label>
+    <select id="filterCidade">
+      <option value="">Todas</option>
+      <option value="ABREU E LIMA">Abreu E Lima</option><option value="AGRESTINA">Agrestina</option><option value="ALTINHO">Altinho</option><option value="ARCOVERDE">Arcoverde</option><option value="BELO JARDIM">Belo Jardim</option><option value="BEZERROS">Bezerros</option><option value="BUIQUE">Buique</option><option value="CABO DE SANTO AGOSTINHO">Cabo De Santo Agostinho</option><option value="CAMARAGIBE">Camaragibe</option><option value="CARPINA">Carpina</option><option value="CARUARU">Caruaru</option><option value="CUSTODIA">Custodia</option><option value="ESCADA">Escada</option><option value="GARANHUNS">Garanhuns</option><option value="GOIANA">Goiana</option><option value="GRAVATÁ">Gravatá</option><option value="IGARASSU">Igarassu</option><option value="JABOATÃO DOS GUARARAPES">Jaboatão Dos Guararapes</option><option value="LIMOEIRO">Limoeiro</option><option value="OLINDA">Olinda</option><option value="PALMARES">Palmares</option><option value="PAULISTA">Paulista</option><option value="PESQUEIRA">Pesqueira</option><option value="PETROLINA">Petrolina</option><option value="RECIFE">Recife</option><option value="SANTA CRUZ DO CAPIBARIBE">Santa Cruz Do Capibaribe</option><option value="SERRA TALHADA">Serra Talhada</option><option value="TIMBAÚBA">Timbaúba</option><option value="VENTUROSA">Venturosa</option><option value="VITORIA DE SANTO ANTÃO">Vitoria De Santo Antão</option><option value="VITÓRIA DE SANTO ANTÃO">Vitória De Santo Antão</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Produto</label>
+    <select id="filterProduto">
+      <option value="">Todos</option>
+    </select>
+  </div>
+</div>
+
+<div class="download-bar">
+  <button class="download-btn" id="pdfBtn" onclick="generatePDF()">
+    <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6z"/><path d="M20 18H4v2h16v-2z"/></svg>
+    Download em PDF
+  </button>
+</div>
+
+<div class="results">
+  <div class="results-count">Exibindo <span id="showing">265</span> de <span>265</span> prestadores</div>
+  <div class="cards" id="cardsContainer"></div>
+</div>
+
+<div class="footer">
+  Select — Operadora de Planos de Saúde &middot; Rede Credenciada
+</div>
 
 <script>
-    $(document).ready(function() {
-		/* Lógica do botão de tema: alterna claro/escuro e salva a preferência no localStorage */
-		const themeToggle = document.getElementById('themeToggle');
-		const body = document.body;
-		const iconSpan = themeToggle.querySelector('.icon');
-		const textSpan = themeToggle.querySelector('.text');
+const DATA = [{"Tipo":"Hospital","Prestador":"HOSPITAL DE AVILA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL PERPETUO SOCORRO","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"CASA DE SAÚDE E MATERNIDADE SÃO SEBASTIÃO","Cidade":"CABO DE SANTO AGOSTINHO","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Sim","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL SÃO VICENTE","Cidade":"SERRA TALHADA","Produto":"Select Sertão","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Sim","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"CASA DE SAÚDE SANTA EFIGENIA LTDA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"NEUROCARDIO","Cidade":"PETROLINA","Produto":"Select Sertão","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"CENTRO HOSPITALAR ALBERT SABIN S/A","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL DE FRATURAS E REABILITACAO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"CENTRO HOSPITALAR SANTA MARIA","Cidade":"VITORIA DE SANTO ANTÃO","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Sim","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL IMACULADA CONCEICAO","Cidade":"PETROLINA","Produto":"Select Sertão","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Não","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"CLÍNICA TERAPEUTICA VIRTUDE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Não","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOPE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL SANTA JOAΝΑ RECIFE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Sim","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL SANTA FE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Não","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HVISÃO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Não","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL DE OLHOS SANTA LUZIA LTDA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL DE ORTOPEDIA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL MEMORIAL ARCOVERDE","Cidade":"ARCOVERDE","Produto":"Select Agreste","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Sim","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL MEMORIAL SÃO GABRIEL","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Sim","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL SANTA TERESINHA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL SÃO JOSE","Cidade":"PESQUEIRA","Produto":"Select Agreste","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Sim","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL MEMORIAL GUARARAPES","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Sim","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"IOR","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL MEMORIAL PETROLINA","Cidade":"PETROLINA","Produto":"Select Sertão","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Sim","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"INTENSIVA DAY HOSPITAL","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"Não","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL CIDADE PATRIMONIO","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Não","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"CLINIC ALL-SAÚDE","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"REAL HOSPITAL PORTUGUES","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Sim","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Não","Premium":"Sim","Smart":"Não","Obs":"PRESTADOR EXCLUSIVO PREMIUM"},{"Tipo":"Hospital","Prestador":"HOSPITAL CENTRAL NOSSA SENHORA APARECIDA","Cidade":"PAULISTA","Produto":"Select Recife","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Não","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Hospital","Prestador":"HOSPITAL MONTE SINΑΙ LTDA","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"Sim","PS Pediatrico":"Não","Consultas":"Sim","Internação":"Sim","Maternidade":"Sim","Básica 100/200":"Sim","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"CAROL BRANDAO IMAGEM E DIAGNÓSTICO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"FERRER DIAGNÓSTICOS POR IMAGEM","Cidade":"VITORIA DE SANTO ANTÃO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"PREVIMAGEM LTDA","Cidade":"PAULISTA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"CENTRO DE DIAGNÓSTICO VALGUEIRO","Cidade":"ARCOVERDE","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"LUCILO MARANHAO DIAGNÓSTICOS","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"DIAGMAX MEDICINA DIAGNOSTICA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"(FLEURY S.A.)","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"CDI - CENTRO DE DIAGNÓSTICO CLÍNICO E POR IMAGEM","Cidade":"PETROLINA","Produto":"Select Sertão","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"DIA MEDICINA NUCLEAR","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"NEURUS","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"IMAX DIAGNÓSTICO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"DERBIMAGEM","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"DIAGIMAGEM","Cidade":"VITÓRIA DE SANTO ANTÃO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Imagem","Prestador":"CLINICA DE ULTRASSONOGRAFIA IMAGO","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"CEDILA - CENTRO DE DIAGNÓSTICO CLINICO E LABORATOR","Cidade":"PETROLINA","Produto":"Select Sertão","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"DIAGNÓSTICOS DA AMERICA S.A","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"DIAGMAX MEDICINA DIAGNOSTICA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO LEAL LAB","Cidade":"ARCOVERDE","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LACIAC DIAGNÓSTICOS","Cidade":"BEZERROS","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"CITOMAXX","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO DE HISTOPATOLOGIA HORACIO FITTIPALDI L","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES","Cidade":"CABO DE SANTO AGOSTINHO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES","Cidade":"GOIANA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES","Cidade":"PAULISTA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIOS MARCELO MAGALHAES","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES","Cidade":"CARPINA","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES","Cidade":"VITORIA DE SANTO ANTÃO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES","Cidade":"TIMBAÚBA","Produto":"Select Premiurn","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO DE PATOLOGIA CLÍNICA NABUCO LOPES","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LARAH LABORATÓRIO DE REPRODUCAO ASSISTIDA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"CITOLAG","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO SILVANO SARMENTO","Cidade":"VITORIA DE SANTO ANTÃO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LAMEDS","Cidade":"BELO JARDIM","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"DIAGCLIN GMCYTO","Cidade":"BELO JARDIM","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO ADOLFO LUTZ","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"MAIS EXAMES LTDA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"LABORATÓRIO FERNANDO TRAVASSOS","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"CENTRO DIAGNOSTICO OLIVEIRA ΡΕΙΧΟΤΟ","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"CENTRO ESPECIALIZADO EM ANÁLISESS CLÍNICAS","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"FLEURY DERBY 550","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"ALMEIDA LABORATORIO DE ANALISES CLINICAS","Cidade":"VENTUROSA","Produto":"Select Premium Pernambuco","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Laboratório","Prestador":"UNIMAGEM","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ABRASER CLÍNICA MULTIDISCIPLINAR","Cidade":"GRAVATÁ","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CAROL BRANDAO IMAGEM E DIAGNÓSTICO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ACCEPT SAÚDE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ACCEPT SAÚDE PAULISTA","Cidade":"PAULISTA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ACOLHER SAÚDE","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"DRA. AFETO TERAPIAS INTEGRADAS","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"MEDVIDA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ALAMO CLÍNICA MULTIDISCIPLINAR","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"BOA VISTA MÉDICAL CENTER","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ALESSANDRA DE FREITAS CARNEIRO LIRA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ALEXANDRE FAEIRSTEIN","Cidade":"CABO DE SANTO AGOSTINHO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ANESTESIA E SERVIÇOS MÉDICOS","Cidade":"PETROLINA","Produto":"Select Sertão","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ESPACO DESENVOLVER","Cidade":"VITORIA DE SANTO ANTÃO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"OCULAR DO CABO","Cidade":"CABO DE SANTO AGOSTINHO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"FASES-ESPACO DE DESENVOLVIMENTO MULTIDISCIPLINAR","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA MAIS SAÚDE","Cidade":"VITORIA DE SANTO ANTÃO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"OTOALERG","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SPA TERAPEUTICO RENASCER","Cidade":"AGRESTINA","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CEDICA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"VIVARE FISIOTERAPIA E SAÚDE","Cidade":"PAULISTA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CEFOPE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CEMED INTEGRAL DE TERAPIAS E DIAGNÓSTICOS LTDA","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"BORIS BERENSTEIN","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CENTRO DE DIAGNÓSTICO JOSE ROCHA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ESPACO EQUILIBRIO","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CENTRO MÉDICO E FRATURAS LTDA","Cidade":"PAULISTA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CENTRO MÉDICO SINERGIA","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CMULHER","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CENTRO REABILITE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLIMERE CLÍNICA DE MEDICINA EM GRUPO E REABILITA","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ACOLHER","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA COGNITTIVE DE DESENVOLVIMENTO HUMANO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CATR-CLÍNICA DE ATENDIMENTO TERAPEUTICO DO RECIF","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"EQUILIBRIO","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"REGENERE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"HOPE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"HOPE","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA DE SAÚDE DO CABO","Cidade":"CABO DE SANTO AGOSTINHO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA DR ERASTO FILHO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA FLAVIO KREIMER LTDA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA IMPAR ESPECIALIDADES","Cidade":"GRAVATÁ","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CISD MED","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"DMI","Cidade":"BELO JARDIM","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA MÉDICA PAULA BARRADAS","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA MOVE FISIOTERAPΙΑ","Cidade":"CARPINA","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA DIOCLECIO COUTINHO","Cidade":"CARPINA","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA SÃO GABRIEL LTDA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA SER EMPATICO MULTIDISCIPLINAR","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA VIDA & SAÚDE","Cidade":"CARPINA","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLINLAB","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLINUR LTDA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLIPPSIN","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLIPPSIN","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLIPPSIN CLÍNICA DE PSICOLOGIA LTDA","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA AFLORAR","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"COVI","Cidade":"VITORIA DE SANTO ANTÃO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"DESPERTAR TERAPIAS AVANCADAS","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"E. GOEDERT CENTRO MÉDICO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"AUDAZ CLÍNICA INTEGRADA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"EQUILIBRIUM CORPORE","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA ESPACO MED POPULAR","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ESPACO TRANSFORMAR - TERAPIAS INTEGRATIVAS","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"EVOLUIR ACOMPANHAMENTO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"FISIO MAIS","Cidade":"CAMARAGIBE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"FREE LIFE SAÚDE E TERAPΙΑ","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"GRUNER","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"HOPE","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"HOPE HOSPITAL DE OLHOS DE PERNAMBUCO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"INSTITUTO FELICIDAD","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"INTERNE BRASIL","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"IFA CARDIO & MEDICINA ESPORTIVA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"LAMEDS","Cidade":"CUSTODIA","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLEE-CLÍNICA DE LONGEVIDADE E EMAGRECIMENTO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"FISIONORTE","Cidade":"PAULISTA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ISIS CLÍNICA DE ESPECIALIDADES","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CCEFOPE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"MARIA DAS GRACAS ARAUJO DA ROCHA","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"VITA SAÚDE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"MULTIHEMO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SOS NEURO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"OFTALMO SANTA LUZIA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"H.OLHOS","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"OLIVER - CENTRO DE SAÚDE E ACUPUNTURA","Cidade":"PAULISTA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ORTHONEURO","Cidade":"ABREU E LIMA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ORTO TRAUMA ORTOPEDIA DO AGRESTE","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ORTOSANI SAÚDE EM EQUILIBRIO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"PC ORG","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"FISIOTOP","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"TEAMOR GRAVATA","Cidade":"GRAVATÁ","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"RADIOTERAPIA ONCOCLÍNICAS RECIFE S.A","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"RECANTO DO GIRASSOL CLÍNICA TERAPEUTICA","Cidade":"BUIQUE","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA RECOVER","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"REDE EVA EM SAÚDE","Cidade":"CAMARAGIBE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"MULTITERAPIAS E DIAGNÓSTICOS","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"FISIOECIA.COM","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA ESTIMULAR MULTIDISCIPLINAR","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SÃO GABRIEL DIAGNÓSTICOS","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SENEURO","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"PRONTOMED","Cidade":"PETROLINA","Produto":"Select Sertão","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLIPPSIN CLÍNICA DE PSICOLOGIA","Cidade":"GRAVATÁ","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA LUDOTE","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"7 ESTIMULOS TERAPIAS INTEGRADAS","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ENDOIMAGEM","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"TEA+","Cidade":"PETROLINA","Produto":"Select Sertão","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"MULTI ESTÍMULOS","Cidade":"LIMOEIRO","Produto":"Select Prenium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"PEDCLIN ESPECIALIDADES PEDIÁTRICAS","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA MOVIMENTO","Cidade":"BEZERROS","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ESPAÇO DESENVOLVER TEA","Cidade":"ESCADA","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"COLORIDAMENTE CLÍNICA MULTIDISCIPLINAR","Cidade":"PALMARES","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ESPAÇO SAÚDE VIDA","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"FLOR DE LOTUS","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ARRUDA DIAGNÓSTICOS","Cidade":"BEZERROS","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLIPPSIN-CLÍNICA DE PSICOLOGIA, NEUROPSICOLOGIA E ESPECIAL","Cidade":"PAULISTA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA DA CRIANCA","Cidade":"BELO JARDIM","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SEQUIPE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"OLINDA MÉDICAL CENTER","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"TOP SAÚDE","Cidade":"CABO DE SANTO AGOSTINHO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"PRO VIDA FISIOTERAPΙΑ","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"GORE OFTALMOLOGIA NORTE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ORTOPEDIA RECIFE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"MULTIMED","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"COTE","Cidade":"PETROLINA","Produto":"Select Sertão","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"NEUROPSI SONIA FERNANDES","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"LUIZ FELIPE LYNCH DE MORAES","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ACOLHER ESPAÇO TERAPÊUTICO MULTIDISCIPLINAR DO CABO","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"INSTITUTO DE UROLOGIA E CIRURGIA DE CARUARU","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"FISIOTERAPIA SÃO GABRIEL","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"MEMORIAL SANTA QUITERIA","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"GASTRO PE","Cidade":"OLINDA","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"BIOFISIO CLÍNICA DE FISIOTERAPIA E SAÚDE","Cidade":"SERRA TALHADA","Produto":"Select Sertão","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"FR SAÚDE","Cidade":"CAMARAGIBE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"DAVITA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"HYDRO MASTER REABILITAÇÃO INTEGRADA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"NEO OFTALMOLOGIA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CEO CENTRO ESPECIALIZADO EM OFTALMOLOGIA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ESPAÇO ACOLHER CABO","Cidade":"CABO DE SANTO AGOSTINHO","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"POLLYANNE ALVES","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"DOC VIDA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"OTOCLIN","Cidade":"PETROLINA","Produto":"Select Sertão","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"NOVO SER KIDS","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"LEALGASTRO SERVIÇOS MÉDICOS","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SERVIÇOS MÉDICOS DE DIAGNÓSTICOS DE CARUARU LTDA S","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SIOMARA SALES CAMPELO & CIA. LTDA","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CEAM","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"PULSE VIDA SAÚDE LTDA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"MEDEIROS & LEITE SERVIÇOS DE SAÚDE","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ESTIMULAR ABA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"IANODA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SEMPRE SAÚDE","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLÍNICA DESPERTAR","Cidade":"BELO JARDIM","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CEDIP GRAVATA LTDA","Cidade":"GRAVATÁ","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ESPACO MACIEL","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CEMEC CENTRO DE MEDICINA ESPECIALIZADA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SANTA EFIGENIA FISIOTERAPIA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"NEPHRONCARE","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"DINIZ E DINIZ & CIA LTDA","Cidade":"GARANHUNS","Produto":"Select Premiurn","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"VITALECER CLÍNICA","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"IMAG MEDICINA DIAGNOSTICA","Cidade":"GARANHUNS","Produto":"Select Prenium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"VITALAB","Cidade":"PALMARES","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"LABORATÓRIO DE ANÁLISESS DO CARPINA","Cidade":"CARPINA","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"IMAGEMCOR TECNOLOGIA EM SAÚDE","Cidade":"BELO JARDIM","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CENTRO DE ESPECIALIDADES MÉDICAS","Cidade":"JABOATÃO DOS GUARARAPES","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"OFTALMO PE","Cidade":"GARANHUNS","Produto":"Select Pernambuco","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"REAL ORTOPEDIA CTO","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLINIC PELVE FISIOTERAPIA PELVICA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"INSTITUTO ENTRELARES DE CUIDADOS MULTIDISCIPLINAR","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ESPACO TERAPEUTICO HERVILA MARIA","Cidade":"PALMARES","Produto":"Select Pernambuco","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ICURA-INSTITUTO DE CUIDADOS E REABILITACAO AVANCADA","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"RECRIAR NUCLEO TERAPEUTICO","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"INSTITUTO DE OLHOS CLOVIS PAIVA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SOUTO & SOUTO TERAPIA INTEGRADAS LTDA","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLIMCENTER CLINICA MEDICA CENTRAL","Cidade":"SANTA CRUZ DO CAPIBARIBE","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CONEXÃO INTERVENCAO COMPORTAMENTAL","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"EXCELLENCE MULTIDISCIPLINARY CLINIC","Cidade":"IGARASSU","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"NEODIAG-MEDICINA DIAGNOSTICA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"S8 FISIOTERAPIA EPILATES","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"UNIDADE DE FISIOTERAPIA INTEGRADA UFI","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ARCOVERDE CENTRO DE DIAGNOSTICO","Cidade":"ARCOVERDE","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"IHENE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"D+ SAUDE CENTRO MEDICO","Cidade":"CARPINA","Produto":"Select Premiurn","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CLINICOR","Cidade":"CARPINA","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ESPACO ACOLHER DESENVOLVIMENTO INFANTIL","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"GASTROMED SERVICOS MEDICOS E DIAGNOSTICOS","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"ENDOCRINOLOGIA PERNAMBUCANA","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"THIAGO CAVALCANTE SERVICOS","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SANTA EFIGENIA ORTOPEDIA E TRAUMATOLOGIA LTDA","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"PSIQUE","Cidade":"ALTINHO","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"INTEGRARTE PSICOLOGIA CLINICA","Cidade":"PALMARES","Produto":"Select Pernambuco","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"CENTRO MEDICO DO RECIFE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"MEMORIAL SAO MIGUEL","Cidade":"CARUARU","Produto":"Select Agreste","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"OTOCENTER GARANHUNS","Cidade":"GARANHUNS","Produto":"Select Premium","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"SEMEAR TEREAPIAS","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""},{"Tipo":"Clínica","Prestador":"INSTITUTO DE ONCOLOGIA DO NORDESTE - IONE","Cidade":"RECIFE","Produto":"Select Recife","PS Adulto":"-","PS Pediatrico":"-","Consultas":"-","Internação":"-","Maternidade":"-","Básica 100/200":"Não","Premium":"Sim","Smart":"Sim","Obs":""}];
+const svcKeys = ['PS Adulto','PS Pediatrico','Consultas','Internação','Maternidade','Básica 100/200','Premium','Smart'];
+const container = document.getElementById('cardsContainer');
+const searchInput = document.getElementById('searchInput');
+const filterTipo = document.getElementById('filterTipo');
+const filterCidade = document.getElementById('filterCidade');
+const filterProduto = document.getElementById('filterProduto');
+const showingEl = document.getElementById('showing');
+const filteredEl = document.getElementById('filteredCount');
 
-		if (localStorage.getItem('theme') === 'dark') {
-			body.classList.add('dark-mode');
-			iconSpan.innerText = '☀️';
-			textSpan.innerText = 'Modo Claro';
-		} else {
-			iconSpan.innerText = '🌙';
-			textSpan.innerText = 'Modo Escuro';
-		}
+const produtos = [...new Set(DATA.map(r=>r.Produto))].sort();
+produtos.forEach(p=>{
+  const o=document.createElement('option');
+  o.value=p;o.textContent=p;
+  filterProduto.appendChild(o);
+});
 
-		themeToggle.addEventListener('click', () => {
-			body.classList.toggle('dark-mode');
+function svcClass(v){
+  if(v==='Sim') return 'svc-sim';
+  if(v==='Não') return 'svc-nao';
+  return 'svc-dash';
+}
+function svcLabel(v){
+  if(v==='Sim') return '✓';
+  if(v==='Não') return '✗';
+  return '—';
+}
 
-			if (body.classList.contains('dark-mode')) {
-				localStorage.setItem('theme', 'dark');
-				iconSpan.innerText = '☀️';
-				textSpan.innerText = 'Modo Claro';
-			} else {
-				localStorage.setItem('theme', 'light');
-				iconSpan.innerText = '🌙';
-				textSpan.innerText = 'Modo Escuro';
-			}
-		});
+function renderCards(items){
+  const frag = document.createDocumentFragment();
+  items.forEach((r,i)=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = Math.min(i*0.02,0.5)+'s';
+    let obsHtml = r.Obs ? `<div class="obs-text">${r.Obs}</div>` : '';
+    let svcsHtml = svcKeys.map(k=>
+      `<div class="svc ${svcClass(r[k])}" data-tip="${k}">${svcLabel(r[k])}</div>`
+    ).join('');
+    card.innerHTML = `
+      <div class="card-left">
+        <span class="badge badge-${r.Tipo}">${r.Tipo}</span>
+        <div class="prestador">${r.Prestador}</div>
+        <div class="cidade">${r.Cidade}</div>
+        <div class="produto">${r.Produto}</div>
+        ${obsHtml}
+      </div>
+      <div class="card-right">
+        <div class="services">${svcsHtml}</div>
+      </div>`;
+    frag.appendChild(card);
+  });
+  container.innerHTML='';
+  container.appendChild(frag);
+  showingEl.textContent=items.length;
+  filteredEl.textContent=items.length;
+}
 
-        /* (Opcional) Código para consultar no GitHub a data da última alteração do arquivo CSV e exibir na tela */
-        /* const user = 'allanlauzid';
-        const repo = 'rede-credenciada-select';
-        const path = 'data/rede_credenciada.csv';
-        
-        fetch(`https://api.github.com/repos/${user}/${repo}/commits?path=${path}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.length > 0) {
-                    const date = new Date(data[0].commit.author.date);
-                    const formattedDate = date.toLocaleDateString('pt-BR');
-                    document.getElementById('lastUpdatedDate').innerText = `Atualizada em ${formattedDate}`;
-                }
-            })
-            .catch(err => console.log('Não foi possível buscar a data de atualização automática.')); */
+function applyFilters(){
+  const q=searchInput.value.toLowerCase();
+  const tipo=filterTipo.value;
+  const cidade=filterCidade.value;
+  const produto=filterProduto.value;
+  const filtered=DATA.filter(r=>{
+    if(q&&!r.Prestador.toLowerCase().includes(q)) return false;
+    if(tipo&&r.Tipo!==tipo) return false;
+    if(cidade&&r.Cidade!==cidade) return false;
+    if(produto&&r.Produto!==produto) return false;
+    return true;
+  });
+  renderCards(filtered);
+}
 
-        /* Ajusta o campo de busca padrão do DataTables para funcionar como um botão flutuante no layout */
-        function setupFloatingFilter() {
-            const filter = document.getElementById('tabelaCredenciados_filter');
-            if (!filter) return;
+searchInput.addEventListener('input',applyFilters);
+filterTipo.addEventListener('change',applyFilters);
+filterCidade.addEventListener('change',applyFilters);
+filterProduto.addEventListener('change',applyFilters);
 
-            const input = filter.querySelector('input');
+const toggle=document.getElementById('themeToggle');
+toggle.addEventListener('click',()=>{
+  const c=document.body.getAttribute('data-theme');
+  const n=c==='dark'?'light':'dark';
+  document.body.setAttribute('data-theme',n);
+});
 
-            // Expande o botão e mostra o campo de texto ao clicar na área de filtro
-            filter.addEventListener('click', function (e) {
-                e.stopPropagation();
-                filter.classList.add('expanded');
-                if (input) {
-                    input.focus();
-                }
-            });
+renderCards(DATA);
 
-            // Recolhe o campo de busca quando o usuário clica fora do filtro
-            document.addEventListener('click', function (e) {
-                if (!filter.contains(e.target)) {
-                    filter.classList.remove('expanded');
-                }
-            });
+// GitHub badge: 1st click expands, 2nd click on icon collapses, 2nd click on text opens github
+const ghBadge = document.getElementById('ghBadge');
+const ghIcon = document.getElementById('ghIcon');
+const ghText = document.getElementById('ghText');
 
-            // Permite fechar o campo pressionando a tecla Esc
-            if (input) {
-                input.addEventListener('keydown', function (e) {
-                    if (e.key === 'Escape') {
-                        filter.classList.remove('expanded');
-                        input.blur();
-                    }
-                });
-            }
-        }
-
-		function initTable(data) {
-			$('#tabelaCredenciados').DataTable({
-				data: data,
-				columns: [
-					{ data: "Tipo" },
-					{ data: "Prestador" },
-					{ data: "Cidade" },
-					{ data: "Produto" },
-					{ data: "PS Adulto" },
-					{ data: "PS Pediatrico" },
-					{ data: "Consultas" },
-					{ data: "Internação" },
-					{ data: "Maternidade" },
-					{ data: "Básica 100/200" },
-					{ data: "Premium" },
-					{ data: "Smart" },
-					{ data: "Obs" }
-				],
-				language: {
-					url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
-				},
-				paging: false,
-				info: false,
-				orderCellsTop: true,
-				order: [[1, "asc"]],
-				fixedHeader: false,
-				responsive: false,
-				autoWidth: false,
-
-				initComplete: function () {
-					var api = this.api();
-
-					$('#loading').hide();
-					$('#tabelaCredenciados').fadeIn();
-
-					// Cria filtros do tipo <select> na segunda linha do cabeçalho para cada coluna
-					api.columns().every(function () {
-						var column = this;
-						var filterCell = $('thead tr:eq(1) th').eq(column.index());
-
-						var select = $('<select><option value="">Todos</option></select>')
-							.appendTo(filterCell.empty())
-							.on('change', function () {
-								var val = $.fn.dataTable.util.escapeRegex($(this).val());
-								column.search(val ? '^' + val + '$' : '', true, false).draw();
-							});
-					});
-
-					updateFilters(api);
-
-                    // Ao finalizar a criação da tabela, aplica o comportamento de botão flutuante ao filtro global
-                    setupFloatingFilter();
-				},
-
-				drawCallback: function () {
-					var api = this.api();
-					updateFilters(api);
-				}
-			});
-		}
-
-
-        Papa.parse("data/rede_credenciada.csv", {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-                setTimeout(() => {
-                    initTable(results.data);
-                }, 500);
-            }
-        });
-
-        function updateFilters(api) {
-            api.columns().every(function () {
-                var column = this;
-                var select = $('thead tr:eq(1) th').eq(column.index()).find('select');
-                var currentVal = select.val();
-
-                var uniqueData = [];
-                api.rows({ search: 'applied' }).every(function (rowIdx) {
-                    var data = api.cell(rowIdx, column.index()).data();
-                    if (uniqueData.indexOf(data) === -1) {
-                        uniqueData.push(data);
-                    }
-                });
-                
-                uniqueData.sort();
-                select.empty().append('<option value="">Todos</option>');
-                
-                uniqueData.forEach(function (d) {
-                    var text = $('<div>').html(d).text();
-                    if (text && text.trim() !== "") {
-                        select.append('<option value="' + text + '">' + text + '</option>');
-                    }
-                });
-
-                if (currentVal) {
-                    select.val(currentVal);
-                }
-            });
-        }
-
-		// Controla a visibilidade do cabeçalho e do botão de tema ao rolar a página em dispositivos móveis
-		const headerContainer = document.querySelector('.fixed-top-container');
-
-		function isPhoneLike() {
-			return Math.min(window.innerWidth, window.innerHeight) <= 768;
-		}
-
-		function updateHeaderVisibility(offset) {
-			if (!isPhoneLike()) return;
-
-			if (offset > 5) {
-				headerContainer.classList.add('hidden-header');
-				themeToggle.classList.add('hidden-header');
-			} else {
-				headerContainer.classList.remove('hidden-header');
-				themeToggle.classList.remove('hidden-header');
-			}
-		}
-
-		window.addEventListener('scroll', function () {
-			const offset = window.scrollY || document.documentElement.scrollTop;
-			updateHeaderVisibility(offset);
-		});
-
-    });
-</script>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker
-      .register("/service-worker.js")
-      .then(function (registration) {
-        console.log("Service Worker registrado:", registration.scope);
-      })
-      .catch(function (error) {
-        console.log("Erro ao registrar o Service Worker:", error);
-      });
+ghBadge.addEventListener('click', function(e) {
+  if (!ghBadge.classList.contains('expanded')) {
+    // First click: expand
+    ghBadge.classList.add('expanded');
+    e.stopPropagation();
+  } else if (ghIcon.contains(e.target) || e.target === ghIcon) {
+    // Second click on icon: collapse
+    ghBadge.classList.remove('expanded');
+    e.stopPropagation();
+  } else {
+    // Second click on text area: open github
+    window.open('https://github.com/allanlauzid', '_blank');
   }
+});
+
+// Collapse if clicking outside
+document.addEventListener('click', function(e) {
+  if (!ghBadge.contains(e.target)) {
+    ghBadge.classList.remove('expanded');
+  }
+});
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').then(function(reg) {
+      console.log('SW registered:', reg.scope);
+    }).catch(function(err) {
+      console.log('SW registration failed:', err);
+    });
+  });
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script>
+function getFilteredData(){
+  var q=searchInput.value.toLowerCase();
+  var tipo=filterTipo.value;
+  var cidade=filterCidade.value;
+  var produto=filterProduto.value;
+  return DATA.filter(function(r){
+    if(q&&r.Prestador.toLowerCase().indexOf(q)===-1)return false;
+    if(tipo&&r.Tipo!==tipo)return false;
+    if(cidade&&r.Cidade!==cidade)return false;
+    if(produto&&r.Produto!==produto)return false;
+    return true;
+  });
+}
+function generatePDF(){
+  var btn=document.getElementById('pdfBtn');
+  btn.textContent='Gerando PDF...';
+  btn.disabled=true;
+  setTimeout(function(){
+    var jsPDF=window.jspdf.jsPDF;
+    var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    var items=getFilteredData();
+    var pw=210,ph=297,mx=8,my=8,cw=pw-2*mx;
+    var tc={'Hospital':[44,62,80],'Imagem':[41,128,185],'Laboratório':[39,174,96],'Clínica':[142,68,173]};
+    var sk=['PS Adulto','PS Pediatrico','Consultas','Internação','Maternidade','Básica 100/200','Premium','Smart'];
+    var ss=['PSAd','PSPed','Cons','Inter','Mat','Bás','Prem','Smt'];
+    function fs(v){return v==='Sim'?'S':(v==='Não'?'N':'-');}
+    doc.setFont('helvetica','bold');doc.setFontSize(14);
+    doc.text('SELECT - Rede Credenciada',pw/2,my+6,{align:'center'});
+    doc.setFont('helvetica','normal');doc.setFontSize(7);
+    doc.text('Total de prestadores: '+items.length,pw/2,my+11,{align:'center'});
+    var y=my+16,bw=20,lw=cw*0.47,rh=12;
+    for(var i=0;i<items.length;i++){
+      var r=items[i];
+      if(y+rh+2>ph-my){doc.addPage();y=my;}
+      var c=tc[r.Tipo]||[100,100,100];
+      doc.setFillColor(c[0],c[1],c[2]);
+      doc.rect(mx,y,bw,rh,'F');
+      doc.setFont('helvetica','bold');doc.setFontSize(7);
+      doc.setTextColor(255,255,255);
+      doc.text(r.Tipo,mx+bw/2,y+rh/2+1,{align:'center'});
+      var lx=mx+bw+2;
+      doc.setTextColor(26,26,46);doc.setFont('helvetica','bold');doc.setFontSize(9);
+      doc.text(r.Prestador,lx,y+4.5,{maxWidth:lw-2});
+      doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(22,33,62);
+      doc.text(r.Cidade,lx,y+9,{maxWidth:lw-2});
+      doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.setTextColor(68,68,68);
+      doc.text(r.Produto,pw-mx,y+4,{align:'right'});
+      var sp=[];for(var j=0;j<sk.length;j++)sp.push(ss[j]+':'+fs(r[sk[j]]));
+      doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(100,100,100);
+      doc.text(sp.join('  '),pw-mx,y+8,{align:'right'});
+      if(r.Obs){doc.setFont('helvetica','bolditalic');doc.setFontSize(5.5);doc.setTextColor(192,57,43);doc.text(r.Obs,pw-mx,y+11.5,{align:'right'});}
+      doc.setDrawColor(200,200,200);doc.setLineWidth(0.2);
+      doc.line(mx,y+rh+0.3,pw-mx,y+rh+0.3);
+      y+=rh+1;
+    }
+    doc.save('SELECT_Rede_Credenciada.pdf');
+    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M12 16l-6-6h4V4h4v6h4l-6 6z"/><path d="M20 18H4v2h16v-2z"/></svg> Download em PDF';
+    btn.disabled=false;
+  },50);
+}
 </script>
 </body>
 </html>
